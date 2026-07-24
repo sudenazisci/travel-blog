@@ -489,7 +489,15 @@ const Home = () => {
                                 <div className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 mx-auto rounded-md md:rounded-lg overflow-hidden mb-1.5 lg:mb-2 shadow-sm md:shadow-md cursor-pointer flex-shrink-0">
                                     <a href={settings?.instagramPostUrl || '#'} target="_blank">
                                         <img
-                                            src={settings?.instagramPreviewImage || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&auto=format&fit=crop&q=60'}
+                                            src={
+                                                !settings?.instagramPreviewImage
+                                                    ? '/youtube-avatar.jpg'
+                                                    : settings.instagramPreviewImage.startsWith('http')
+                                                        ? settings.instagramPreviewImage.replace('http://localhost:5000', API_BASE)
+                                                        : settings.instagramPreviewImage.startsWith('/uploads')
+                                                            ? `${API_BASE}${settings.instagramPreviewImage}`
+                                                            : settings.instagramPreviewImage
+                                            }
                                             alt="Instagram Post"
                                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                                         />
