@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import API_BASE from '../api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -163,7 +163,7 @@ const Home = () => {
                                 <div
                                     className="absolute inset-0 bg-cover transition-transform duration-[10s] ease-linear transform hover:scale-105"
                                     style={{
-                                        backgroundImage: `url('${slide.image?.startsWith('http') ? slide.image : `http://${window.location.hostname}:5000${slide.image}`}')`,
+                                        backgroundImage: `url('${slide.image?.startsWith('http') ? slide.image : `${API_BASE}${slide.image.startsWith('/') ? '' : '/'}${slide.image}`}')`,
                                         backgroundPosition: `center ${slide.imagePosition || '50%'}`
                                     }}
                                 >
@@ -329,7 +329,7 @@ const Home = () => {
                                 <article key={blog._id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full hover:-translate-y-1">
                                     <div className="relative overflow-hidden h-56">
                                         <img
-                                            src={blog.image ? (blog.image.startsWith('http') ? blog.image : `http://${window.location.hostname}:5000${blog.image.startsWith('/') ? '' : '/'}${blog.image}`) : 'https://via.placeholder.com/400x300'}
+                                            src={blog.image ? (blog.image.startsWith('http') ? blog.image : `${API_BASE}${blog.image.startsWith('/') ? '' : '/'}${blog.image}`) : 'https://via.placeholder.com/400x300'}
                                             alt={blog.title}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                             style={{ objectPosition: `center ${blog.imagePosition || '50%'}` }}
