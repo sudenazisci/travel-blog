@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg-light text-gray-800 font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold text-primary;
+  }
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-block bg-primary text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-300 hover:bg-accent hover:-translate-y-0.5 shadow-md;
+  }
+  .btn-secondary {
+    @apply inline-block bg-transparent border-2 border-primary text-primary px-6 py-2.5 rounded-lg font-medium transition-all duration-300 hover:bg-primary hover:text-white;
+  }
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+  animation: blob 8s infinite ease-in-out;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Custom Leaflet overrides and utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-leaflet-popup .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 16px !important;
+  border: none !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-tip-container {
+  display: block !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-tip {
+  background: white !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15) !important;
+}
+
+.custom-leaflet-popup a.leaflet-popup-close-button {
+  color: white !important;
+  font-size: 18px !important;
+  padding: 8px 10px 0 0 !important;
+  z-index: 50 !important;
+}
+
+.custom-thumbnail-marker {
+  background: transparent !important;
+  border: none !important;
+}

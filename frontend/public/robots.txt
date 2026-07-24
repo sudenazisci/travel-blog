@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /yonetim-gizli-giris
+
+Sitemap: https://www.ceylanme.com/sitemap.xml
