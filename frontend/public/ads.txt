@@ -1,0 +1,10 @@
+# ==============================================================================
+# Google AdSense ads.txt Configuration for Ceylan.m.e
+# ==============================================================================
+# Once your Google AdSense account is approved, replace 'pub-XXXXXXXXXXXXXXXX'
+# with your actual Publisher ID (e.g. pub-1234567890123456)
+#
+# Format:
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+# ==============================================================================
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

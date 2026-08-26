@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-[#FBF9F5] text-[#4A4744] font-sans antialiased selection:bg-[#A34828]/15 selection:text-[#1A1918];
+    line-height: 1.75;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    @apply font-normal text-[#1A1918] tracking-tight;
+  }
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  .btn-editorial {
+    @apply inline-flex items-center justify-center min-h-[44px] bg-[#1A1918] text-[#FBF9F5] px-6 py-2.5 rounded-none font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#A34828] touch-manipulation;
+  }
+  .btn-editorial-secondary {
+    @apply inline-flex items-center justify-center min-h-[44px] bg-transparent border border-[#1A1918] text-[#1A1918] px-6 py-2.5 rounded-none font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#1A1918] hover:text-[#FBF9F5] touch-manipulation;
+  }
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .container-editorial {
+    @apply max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12;
+  }
+  .border-hairline {
+    border-color: rgba(26, 25, 24, 0.12);
+  }
+}
+
+/* Editorial Dropcap */
+.first-letter-dropcap::first-letter {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 3.8rem;
+  line-height: 0.8;
+  float: left;
+  margin-right: 0.6rem;
+  margin-top: 0.15rem;
+  color: #A34828;
+  font-weight: 600;
+}
+
+/* Image Editorial Zoom */
+.img-editorial-zoom {
+  transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.group:hover .img-editorial-zoom {
+  transform: scale(1.03);
+}
+
+/* Custom Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Leaflet Map Utilities */
+.custom-leaflet-popup .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-tip-container {
+  display: block !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-tip {
+  background: #FBF9F5 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+.custom-leaflet-popup a.leaflet-popup-close-button {
+  color: #1A1918 !important;
+  font-size: 16px !important;
+  padding: 6px 8px 0 0 !important;
+  z-index: 50 !important;
+}
+
+.custom-thumbnail-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img-editorial-zoom {
+    transition: none !important;
+    transform: none !important;
+  }
+}
