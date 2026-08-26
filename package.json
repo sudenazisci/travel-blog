@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm install && npm run build",
+    "build": "[ -d \"frontend\" ] && (cd frontend && npm install && npm run build) || npm run build",
     "start": "node server.js"
   },
   "dependencies": {
