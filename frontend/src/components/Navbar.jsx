@@ -91,8 +91,8 @@ const Navbar = () => {
         <>
             <header className={`sticky top-0 z-50 transition-all duration-300 ${
                 isScrolled 
-                    ? 'bg-[#FBF9F5]/95 backdrop-blur-md border-b border-[#1A1918]/15 py-2 shadow-xs' 
-                    : 'bg-[#FBF9F5] border-b border-[#1A1918]/15 py-3'
+                    ? 'bg-white/95 backdrop-blur-md border-b border-[#1A1918]/15 py-2 shadow-xs' 
+                    : 'bg-white border-b border-[#1A1918]/15 py-3'
             }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12" ref={dropdownRef}>
                     
@@ -145,7 +145,7 @@ const Navbar = () => {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 5 }}
                                                 transition={{ duration: 0.15 }}
-                                                className="absolute top-full left-0 min-w-[200px] bg-[#FBF9F5] border border-[#1A1918]/15 shadow-xl z-50 p-2 space-y-1"
+                                                className="absolute top-full left-0 min-w-[200px] bg-white border border-[#1A1918]/15 shadow-xl z-50 p-2 space-y-1"
                                             >
                                                 <div className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest px-2.5 py-1 border-b border-[#1A1918]/10 mb-1">
                                                     {region.name} ŞEHİRLERİ
@@ -233,7 +233,7 @@ const Navbar = () => {
             {/* Mobile Drawer Menu */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
-                    <div className="fixed inset-0 z-[9999] lg:hidden flex flex-col bg-[#FBF9F5]">
+                    <div className="fixed inset-0 z-[9999] lg:hidden flex flex-col bg-white">
                         <div className="p-4 border-b border-[#1A1918]/15 flex items-center justify-between">
                             <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
                                 <img src="/logo.png" alt="Ceylan.m.e." className="h-8 w-auto object-contain" />

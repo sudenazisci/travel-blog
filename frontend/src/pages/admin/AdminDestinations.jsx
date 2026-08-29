@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import API_BASE from '../../api';
 import axios from 'axios';
 import AdminLayout from '../../components/AdminLayout';
@@ -141,7 +141,43 @@ const AdminDestinations = () => {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Ülke / Şehir Adı</label>
-                                <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required placeholder="Örn: Türkiye" />
+                                <div className="flex gap-2">
+                                    <input 
+                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent text-sm" 
+                                        value={form.name} 
+                                        onChange={e => setForm({ ...form, name: e.target.value })} 
+                                        required 
+                                        placeholder="Örn: Türkiye, Tokyo, Amalfi..." 
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            if (!form.name.trim()) return alert('Lütfen önce bir şehir veya ülke adı girin.');
+                                            try {
+                                                const res = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+                                                    params: { q: form.name, format: 'json', limit: 1 }
+                                                });
+                                                if (res.data && res.data.length > 0) {
+                                                    const { lat, lon, display_name } = res.data[0];
+                                                    setForm(prev => ({
+                                                        ...prev,
+                                                        lat: parseFloat(lat).toFixed(6),
+                                                        lng: parseFloat(lon).toFixed(6)
+                                                    }));
+                                                    alert(`📍 Konum Bulundu: ${display_name.split(',')[0]}`);
+                                                } else {
+                                                    alert('Konum bulunamadı. Lütfen haritadan tıklayarak seçin.');
+                                                }
+                                            } catch (err) {
+                                                alert('Konum aranırken bir hata oluştu.');
+                                            }
+                                        }}
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+                                        title="Harita koordinatlarını isme göre otomatik getir"
+                                    >
+                                        <span>📍</span> Konum Bul
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Görsel URL'si</label>
@@ -199,7 +235,8 @@ const AdminDestinations = () => {
                                         attributionControl={false}
                                     >
                                         <TileLayer
-                                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
                                         <MapEvents onClick={handleMapClick} />
                                         <MapController center={form.lat !== '' && form.lng !== '' && !isNaN(parseFloat(form.lat)) && !isNaN(parseFloat(form.lng)) ? [parseFloat(form.lat), parseFloat(form.lng)] : null} />

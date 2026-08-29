@@ -8,7 +8,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const LOCAL_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/travelblog';
+const LOCAL_URI = 'mongodb://localhost:27017/travelblog';
 const ATLAS_URI = process.argv[2];
 
 if (!ATLAS_URI) {
