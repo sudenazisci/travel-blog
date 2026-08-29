@@ -558,22 +558,34 @@ const AdminSettings = () => {
                                     </label>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Ülke Sayısı</label>
-                                    <input type="text" name="aboutStatsCountries" value={settings.aboutStatsCountries || ''} onChange={handleChange} placeholder="Örn: 25+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">İstatistik 1 (Değer & Etiket)</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="text" name="aboutStatsCountries" value={settings.aboutStatsCountries || ''} onChange={handleChange} placeholder="Örn: 25+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                        <input type="text" name="aboutStatsCountriesLabel" value={settings.aboutStatsCountriesLabel || ''} onChange={handleChange} placeholder="Örn: Keşfedilen Ülke" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Şehir Rehberi</label>
-                                    <input type="text" name="aboutStatsCities" value={settings.aboutStatsCities || ''} onChange={handleChange} placeholder="Örn: 100+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">İstatistik 2 (Değer & Etiket)</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="text" name="aboutStatsCities" value={settings.aboutStatsCities || ''} onChange={handleChange} placeholder="Örn: 100+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                        <input type="text" name="aboutStatsCitiesLabel" value={settings.aboutStatsCitiesLabel || ''} onChange={handleChange} placeholder="Örn: Şehir Rehberi" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Topluluk</label>
-                                    <input type="text" name="aboutStatsCommunity" value={settings.aboutStatsCommunity || ''} onChange={handleChange} placeholder="Örn: 100K+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">İstatistik 3 (Değer & Etiket)</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="text" name="aboutStatsCommunity" value={settings.aboutStatsCommunity || ''} onChange={handleChange} placeholder="Örn: 100K+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                        <input type="text" name="aboutStatsCommunityLabel" value={settings.aboutStatsCommunityLabel || ''} onChange={handleChange} placeholder="Örn: Gezgin Topluluğu" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Fotoğraf/Rehber</label>
-                                    <input type="text" name="aboutStatsGuides" value={settings.aboutStatsGuides || ''} onChange={handleChange} placeholder="Örn: 500+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">İstatistik 4 (Değer & Etiket)</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="text" name="aboutStatsGuides" value={settings.aboutStatsGuides || ''} onChange={handleChange} placeholder="Örn: 500+" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                        <input type="text" name="aboutStatsGuidesLabel" value={settings.aboutStatsGuidesLabel || ''} onChange={handleChange} placeholder="Örn: Fotoğraf & İpucu" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                    </div>
                                 </div>
                             </div>
                         </div>

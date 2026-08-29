@@ -34,9 +34,13 @@ const SiteSettingsSchema = new mongoose.Schema({
     aboutStoryContent: { type: String, default: 'Ceylan.m.e, dünyayı yalnızca harita üzerinden izlemek yerine ona dokunmak, sokaklarında kaybolmak ve yerel insanların gözünden yaşamı anlamak tutkusuyla doğdu. Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine, Amalfi’nin dik kıyılarından Marakeş’in baharat kokulu çarşılarına uzanan bu yolculukta amacımız; her gezginin kendi rüya seyahatini en doğru, pratik ve samimi bilgilerle planlamasını sağlamak.' },
     aboutImage: { type: String, default: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=1000&auto=format&fit=crop&q=80' },
     aboutStatsCountries: { type: String, default: '25+' },
+    aboutStatsCountriesLabel: { type: String, default: 'Keşfedilen Ülke' },
     aboutStatsCities: { type: String, default: '100+' },
+    aboutStatsCitiesLabel: { type: String, default: 'Şehir Rehberi' },
     aboutStatsCommunity: { type: String, default: '100K+' },
+    aboutStatsCommunityLabel: { type: String, default: 'Gezgin Topluluğu' },
     aboutStatsGuides: { type: String, default: '500+' },
+    aboutStatsGuidesLabel: { type: String, default: 'Fotoğraf & İpucu' },
     featuredBlogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blog' }], // Keeping for backward compatibility or alternative use
     heroSlides: [{
         image: { type: String, default: '' },

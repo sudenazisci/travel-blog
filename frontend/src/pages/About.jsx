@@ -58,7 +58,7 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                                 </span>
 
                                 <h1 className="font-serif text-4xl sm:text-6xl text-[#1A1918] font-normal leading-[1.1] tracking-tight">
-                                    Dünyayı keşfetmek, <span className="italic">anılar biriktirmek</span> ve ilham vermek için yoldayız.
+                                    {settings?.aboutTitle || 'Dünyayı keşfetmek, anılar biriktirmek ve ilham vermek için yoldayız.'}
                                 </h1>
 
                                 <p className="font-sans text-base sm:text-lg text-[#4A4744] font-light max-w-xl leading-relaxed">
@@ -76,13 +76,13 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                             <div className="lg:col-span-5">
                                 <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-3">
                                     <img
-                                        src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&auto=format&fit=crop&q=80"
+                                        src={settings?.aboutHeroImage || "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&auto=format&fit=crop&q=80"}
                                         alt="Seyahat Görseli"
                                         className="w-full h-[400px] object-cover"
                                     />
                                     <div className="pt-3 font-mono text-[10px] uppercase text-[#78746D] flex justify-between">
-                                        <span>KAPADOKYA, TÜRKİYE</span>
-                                        <span>38.6431° N · 34.8289° E</span>
+                                        <span>{settings?.aboutHeroImageCaption || "KAPADOKYA, TÜRKİYE"}</span>
+                                        <span>{settings?.aboutHeroImageCoords || "38.6431° N · 34.8289° E"}</span>
                                     </div>
                                 </div>
                             </div>
@@ -126,19 +126,19 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center font-mono">
                             <div>
                                 <span className="block font-serif text-4xl text-[#A34828] mb-1">{statCountries}</span>
-                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">Keşfedilen Ülke</span>
+                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">{settings?.aboutStatsCountriesLabel || 'Keşfedilen Ülke'}</span>
                             </div>
                             <div>
                                 <span className="block font-serif text-4xl text-[#A34828] mb-1">{statCities}</span>
-                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">Şehir Rehberi</span>
+                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">{settings?.aboutStatsCitiesLabel || 'Şehir Rehberi'}</span>
                             </div>
                             <div>
                                 <span className="block font-serif text-4xl text-[#A34828] mb-1">{statCommunity}</span>
-                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">Gezgin Topluluğu</span>
+                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">{settings?.aboutStatsCommunityLabel || 'Gezgin Topluluğu'}</span>
                             </div>
                             <div>
                                 <span className="block font-serif text-4xl text-[#A34828] mb-1">{statGuides}</span>
-                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">Fotoğraf & İpucu</span>
+                                <span className="text-[10px] uppercase text-[#FBF9F5]/60 tracking-widest">{settings?.aboutStatsGuidesLabel || 'Fotoğraf & İpucu'}</span>
                             </div>
                         </div>
                     </div>

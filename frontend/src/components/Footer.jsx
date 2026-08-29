@@ -9,7 +9,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-white text-[#1A1918] border-t border-[#1A1918]/15 pt-8 pb-6 select-none">
+        <footer className="bg-[#F4F0E8] text-[#1A1918] border-t border-[#1A1918]/15 pt-8 pb-6 select-none">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 {/* Broadside Layout */}
@@ -17,12 +17,8 @@ const Footer = () => {
                     
                     {/* Brand Column */}
                     <div className="lg:col-span-5 space-y-2.5">
-                        <Link to="/" className="inline-block">
-                            <img 
-                                src="/logo.png" 
-                                alt="Ceylan.m.e." 
-                                className="h-8 sm:h-9 w-auto object-contain" 
-                            />
+                        <Link to="/" className="inline-block font-serif text-2xl font-bold text-[#1A1918] tracking-tight hover:text-[#A34828] transition-colors">
+                            Ceylan.m.e.
                         </Link>
                         
                         <p className="font-serif text-sm text-[#1A1918] italic leading-relaxed max-w-sm">
