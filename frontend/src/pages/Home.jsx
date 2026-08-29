@@ -287,14 +287,19 @@ const Home = () => {
                     <aside className="w-full lg:w-1/4 space-y-5">
                         
                         {/* Compact Instagram Card */}
-                        <div className="p-3.5 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2.5">
+                        <a
+                            href={settings?.instagramPostUrl || 'https://www.instagram.com/ceylan.m.e/'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block p-3.5 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2.5 hover:border-[#A34828] transition-colors group cursor-pointer"
+                        >
                             <div className="flex items-center justify-between border-b border-[#1A1918]/15 pb-2">
                                 <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest flex items-center gap-1">
                                     <Instagram size={12} />
                                     INSTAGRAM
                                 </span>
                                 <span className="font-mono text-[9px] font-bold text-[#1A1918]">
-                                    104 Bin Takipçi
+                                    {settings?.instagramFollowerCount || "104 Bin Takipçi"}
                                 </span>
                             </div>
 
@@ -313,18 +318,18 @@ const Home = () => {
                                 </div>
                             </div>
 
-                            <a
-                                href={settings?.instagramPostUrl || 'https://www.instagram.com/ceylan.m.e/'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full py-1.5 bg-[#1A1918] hover:bg-[#A34828] text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[34px]"
-                            >
+                            <div className="w-full py-1.5 bg-[#1A1918] group-hover:bg-[#A34828] text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[34px] flex items-center justify-center">
                                 Takip Et ↗
-                            </a>
-                        </div>
+                            </div>
+                        </a>
 
                         {/* YouTube Card */}
-                        <div className="p-3.5 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2.5">
+                        <a
+                            href={settings?.youtubeUrl || 'https://www.youtube.com/@Ceylan.m.e'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block p-3.5 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2.5 hover:border-[#A34828] transition-colors group cursor-pointer"
+                        >
                             <div className="flex items-center justify-between border-b border-[#1A1918]/15 pb-2">
                                 <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest flex items-center gap-1">
                                     <Youtube size={12} />
@@ -336,15 +341,10 @@ const Home = () => {
                                 Sinematik seyahat günlükleri ve gezinti rehberleri.
                             </p>
 
-                            <a
-                                href={settings?.youtubeUrl || 'https://www.youtube.com/@Ceylan.m.e'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full py-1.5 border border-[#1A1918] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[34px]"
-                            >
+                            <div className="w-full py-1.5 border border-[#1A1918] text-[#1A1918] group-hover:bg-[#1A1918] group-hover:text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[34px] flex items-center justify-center">
                                 Abone Ol ↗
-                            </a>
-                        </div>
+                            </div>
+                        </a>
 
                         {/* Compact Advertising / Sponsorship Card */}
                         <div className="p-3.5 border border-[#1A1918]/15 bg-[#FBF9F5] space-y-1.5">

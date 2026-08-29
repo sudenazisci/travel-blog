@@ -135,7 +135,7 @@ const AdminLogin = () => {
                             <div>
                                 <label htmlFor="securityPin" className="block text-sm font-medium text-gray-700">Güvenlik PIN Kodu</label>
                                 <div className="mt-1">
-                                    <input id="securityPin" name="securityPin" type="password" required value={formData.securityPin} onChange={handleChange} placeholder="6 haneli PIN kodunu girin" className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm" />
+                                    <input id="securityPin" name="securityPin" type="password" required value={formData.securityPin} onChange={handleChange} placeholder="PIN Kodu" className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm" />
                                 </div>
                             </div>
                             <div>
