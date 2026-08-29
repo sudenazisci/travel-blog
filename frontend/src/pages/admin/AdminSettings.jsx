@@ -348,49 +348,11 @@ const AdminSettings = () => {
                     </div>
 
                     <div className="border-t border-gray-100 pt-6">
-                        <h4 className="text-lg font-bold text-gray-800 mb-4">Destinasyonlar & İstatistikler</h4>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Destinasyon Sloganı (Sol Üst)</label>
-                                <input type="text" name="destinationsTag" value={settings.destinationsTag || ''} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Toplam Mil</label>
-                                <input type="text" name="mileCount" value={settings.mileCount || ''} onChange={handleChange} placeholder="Örn: 850K+" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ülkeler</label>
-                                    <input type="number" name="countryCount" value={settings.countryCount || 0} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Şehirler</label>
-                                    <input type="number" name="cityCount" value={settings.cityCount || 0} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-gray-100 pt-6">
-                        <h4 className="text-lg font-bold text-gray-800 mb-4">İlham Verici Söz (Özlü Söz)</h4>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Ana Sayfa Sözü</label>
-                                <textarea name="homepageQuote" value={settings.homepageQuote || ''} onChange={handleChange} rows="2" placeholder="Örn: The world is a book..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent resize-none"></textarea>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Sözün Sahibi (Yazar)</label>
-                                <input type="text" name="homepageQuoteAuthor" value={settings.homepageQuoteAuthor || ''} onChange={handleChange} placeholder="Örn: St. Augustine" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-gray-100 pt-6">
-                        <h4 className="text-lg font-bold text-gray-800 mb-4">Duyurular</h4>
+                        <h4 className="text-lg font-bold text-gray-800 mb-4">Duyurular & Kayan Yazı</h4>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Kayan Yazı Metni (Ana Sayfa)</label>
-                            <input type="text" name="announcement" value={settings.announcement || ''} onChange={handleChange} placeholder="Örn: Norveç Gezimiz Çok Yakında!" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            <p className="text-xs text-gray-400 mt-1">Ana sayfanın en üstünde kayan yazı olarak görünür.</p>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Kayan Yazı Metni (Ana Sayfa Üst Bar)</label>
+                            <input type="text" name="announcement" value={settings.announcement || ''} onChange={handleChange} placeholder="Örn: VIETNAM VE TAYLAND SEYAHAT REHBERİ ÇOK YAKINDA!" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
+                            <p className="text-xs text-gray-400 mt-1">Ana sayfanın en üstünde kayan duyuru bandı olarak görünür.</p>
                         </div>
                     </div>
 
