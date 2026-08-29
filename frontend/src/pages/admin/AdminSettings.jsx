@@ -397,12 +397,18 @@ const AdminSettings = () => {
                     </div>
 
                     <div className="border-t border-gray-100 pt-6">
+                    <div className="border-t border-gray-100 pt-6">
+                        <h4 className="text-lg font-bold text-gray-800 mb-4">Harita Ayarları</h4>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Keşif Haritası Ülke Sayısı (Harita İçinde Görünür)</label>
+                            <input type="text" name="mapVisitedCountryCount" value={settings.mapVisitedCountryCount || '60'} onChange={handleChange} placeholder="Örn: 60" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
+                            <p className="text-xs text-gray-400 mt-1">Ana sayfadaki Keşif Haritasının sol üst köşesinde "ROTA HARİTASI • 60 ÜLKE" şeklinde görünür.</p>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-6">
                         <h4 className="text-lg font-bold text-gray-800 mb-4">Instagram Tanıtımı</h4>
                         <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Son Gönderi Linki</label>
-                                <input type="text" name="instagramPostUrl" value={settings.instagramPostUrl || ''} onChange={handleChange} placeholder="https://instagram.com/p/..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Önizleme Resmi</label>
                                 <div className="flex gap-2">
@@ -439,18 +445,14 @@ const AdminSettings = () => {
                                     </div>
                                 )}
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Takipçi Sayısı</label>
+                                    <input type="text" name="instagramFollowerCount" value={settings.instagramFollowerCount || ''} onChange={handleChange} placeholder="Örn: 104 Bin" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Gönderi Sayısı</label>
                                     <input type="text" name="instagramPostCount" value={settings.instagramPostCount || ''} onChange={handleChange} placeholder="Örn: 443" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Takipçi</label>
-                                    <input type="text" name="instagramFollowerCount" value={settings.instagramFollowerCount || ''} onChange={handleChange} placeholder="Örn: 102 B" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Takip</label>
-                                    <input type="text" name="instagramFollowingCount" value={settings.instagramFollowingCount || ''} onChange={handleChange} placeholder="Örn: 405" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
                                 </div>
                             </div>
                         </div>
@@ -458,15 +460,9 @@ const AdminSettings = () => {
 
                     <div className="border-t border-gray-100 pt-6">
                         <h4 className="text-lg font-bold text-gray-800 mb-4">YouTube Tanıtımı</h4>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">YouTube Kanal Linki</label>
-                                <input type="text" name="youtubeUrl" value={settings.youtubeUrl || ''} onChange={handleChange} placeholder="https://youtube.com/@Ceylan.m.e" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Abone Sayısı</label>
-                                <input type="text" name="youtubeSubscriberCount" value={settings.youtubeSubscriberCount || ''} onChange={handleChange} placeholder="Örn: 10 B" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">YouTube Kanal Linki</label>
+                            <input type="text" name="youtubeUrl" value={settings.youtubeUrl || ''} onChange={handleChange} placeholder="https://youtube.com/@Ceylan.m.e" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
                         </div>
                     </div>
 

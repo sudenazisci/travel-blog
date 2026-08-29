@@ -95,7 +95,7 @@ const WorldMap = ({ settings }) => {
             {/* Header Layer */}
             <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-[500] pointer-events-none">
                 <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#A34828] bg-[#FBF9F5]/90 px-2.5 py-0.5 border border-[#1A1918]/15">
-                    ROTA HARİTASI
+                    ROTA HARİTASI • {settings?.mapVisitedCountryCount || '60'} ÜLKE
                 </span>
             </div>
 

@@ -49,7 +49,7 @@ const Home = () => {
         const params = new URLSearchParams(window.location.search);
         const query = params.get('search') || '';
         const page = parseInt(params.get('page')) || 1;
-        const limit = 4;
+        const limit = 12;
 
         const fetchBlogs = async () => {
             try {
@@ -375,9 +375,6 @@ const Home = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 border-t border-[#1A1918]/15 pt-8">
                 <div className="flex items-center justify-between pb-2 mb-4 border-b border-[#1A1918]/15">
                     <div>
-                        <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest block mb-0.5">
-                            ROTA HARİTASI
-                        </span>
                         <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#1A1918]">
                             Keşif Haritası
                         </h2>

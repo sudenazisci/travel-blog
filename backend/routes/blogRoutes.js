@@ -10,7 +10,10 @@ router.get('/', async (req, res) => {
     try {
         let query = {};
         if (req.query.destination) {
-            query.destination = req.query.destination;
+            const Destination = require('../models/Destination');
+            const childDests = await Destination.find({ parent: req.query.destination }, '_id');
+            const childIds = childDests.map(d => d._id);
+            query.destination = { $in: [req.query.destination, ...childIds] };
         }
         if (req.query.search) {
             query.$or = [

@@ -41,6 +41,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     aboutStatsCommunityLabel: { type: String, default: 'Gezgin Topluluğu' },
     aboutStatsGuides: { type: String, default: '500+' },
     aboutStatsGuidesLabel: { type: String, default: 'Fotoğraf & İpucu' },
+    mapVisitedCountryCount: { type: String, default: '60' },
     featuredBlogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blog' }], // Keeping for backward compatibility or alternative use
     heroSlides: [{
         image: { type: String, default: '' },
