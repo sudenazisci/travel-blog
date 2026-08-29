@@ -593,7 +593,8 @@ const AdManagementSection = () => {
     }, []);
 
     const handleCreateAd = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
+        if (!newAd.title.trim()) return alert('Lütfen yeni reklam başlığını girin.');
         const token = localStorage.getItem('token');
         try {
             await axios.post(`${API_BASE}/api/ads`, newAd, {
@@ -655,7 +656,6 @@ const AdManagementSection = () => {
                             onChange={e => setNewAd({ ...newAd, title: e.target.value })}
                             placeholder="Örn: Turizm Acentası Sol Banner"
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                            required
                         />
                     </div>
                     <div>
