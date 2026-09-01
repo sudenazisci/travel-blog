@@ -26,6 +26,7 @@ const trNormalize = (text) => {
 
 const calculateSeoScore = (blog) => {
     let score = 0;
+    if (!blog) return { score: 0, wordCount: 0, readTime: 1, isAdSenseReady: false };
     if (blog.title && blog.title.length >= 10 && blog.title.length <= 70) score += 20;
     else if (blog.title) score += 10;
 
@@ -62,7 +63,7 @@ const AdminPosts = () => {
 
     const fetchBlogs = async () => {
         try {
-            const res = await axios.get(`${API_BASE}/api/blogs?limit=100`);
+            const res = await axios.get(`${API_BASE}/api/blogs?limit=100&includeDrafts=true`);
             const fetchedBlogs = res.data.blogs || res.data || [];
             setBlogs(fetchedBlogs);
         } catch (err) {
@@ -87,6 +88,7 @@ const AdminPosts = () => {
 
     const normalizedFilter = trNormalize(filterQuery);
     const filteredBlogs = blogs.filter(blog => {
+        if (!blog) return false;
         if (!normalizedFilter) return true;
         const normTitle = trNormalize(blog.title);
         const normDest = trNormalize(blog.destination?.name || '');
@@ -146,7 +148,14 @@ const AdminPosts = () => {
                                 return (
                                     <tr key={blog._id} className="hover:bg-gray-50/80 transition-colors">
                                         <td className="px-6 py-4 max-w-xs">
-                                            <div className="font-bold text-gray-900 line-clamp-1">{blog.title}</div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-gray-900 line-clamp-1">{blog.title}</span>
+                                                {blog.isDraft ? (
+                                                    <span className="px-2 py-0.5 text-[9px] font-bold text-amber-800 bg-amber-100 rounded shrink-0">TASLAK</span>
+                                                ) : (
+                                                    <span className="px-2 py-0.5 text-[9px] font-bold text-emerald-800 bg-emerald-100 rounded shrink-0">YAYINDA</span>
+                                                )}
+                                            </div>
                                             <div className="text-gray-400 text-[11px] mt-0.5">
                                                 {blog.destination?.name || 'Genel Rota'} · {new Date(blog.createdAt).toLocaleDateString('tr-TR')}
                                             </div>

@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/authMiddleware');
 const SiteSettings = require('../models/SiteSettings');
-// Middleware to verify token would go here if we had it exported, 
-// strictly simplified for now we trust the client or duplicate middleware logic if needed.
-// For robust app, importing auth middleware is recommended. 
 
 // GET Settings
 router.get('/', async (req, res) => {
@@ -28,7 +26,7 @@ router.get('/', async (req, res) => {
 });
 
 // UPDATE Settings
-router.put('/', async (req, res) => {
+router.put('/', auth, async (req, res) => {
     try {
         let settings = await SiteSettings.findOne();
         if (!settings) {

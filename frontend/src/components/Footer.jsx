@@ -71,7 +71,7 @@ const Footer = () => {
                         <ul className="space-y-1 font-mono text-[11px] text-[#4A4744]">
                             <li><Link to="/contact" className="hover:text-[#A34828] transition-colors uppercase">Bize Ulaşın</Link></li>
                             <li><Link to="/contact" className="hover:text-[#A34828] transition-colors uppercase">Ortaklık</Link></li>
-                            <li><a href="mailto:sudenazisci@gmail.com" className="hover:text-[#A34828] transition-colors uppercase">E-Posta</a></li>
+                            <li><a href="mailto:ceylan.me@outlook.com" className="hover:text-[#A34828] transition-colors uppercase">E-Posta</a></li>
                         </ul>
                     </div>
 

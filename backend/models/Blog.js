@@ -24,6 +24,14 @@ const BlogSchema = new mongoose.Schema({
     },
     metaTitle: String,
     metaDescription: String,
+    category: String,
+    country: String,
+    city: String,
+    travelDate: String,
+    isDraft: {
+        type: Boolean,
+        default: false
+    },
     destination: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Destination'

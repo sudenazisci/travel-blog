@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
 
                 const mailOptions = {
                     from: process.env.EMAIL_USER,
-                    to: 'sudenazisci@gmail.com',
+                    to: process.env.NOTIFICATION_EMAIL || 'ceylan.me@outlook.com',
                     subject: `İletişim Formu: ${subject || 'Yeni Mesaj'}`,
                     text: `Ad: ${name}\nE-posta: ${email}\nKonu: ${subject}\n\nMesaj:\n${message}`
                 };

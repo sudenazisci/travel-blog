@@ -66,7 +66,7 @@ const Destinations = () => {
                     axios.get(`${API_BASE}/api/destinations`),
                     axios.get(`${API_BASE}/api/blogs?limit=100`)
                 ]);
-                const subDests = destRes.data.filter(d => !d.isRegion);
+                const subDests = (destRes.data || []).filter(d => d && !d.isRegion);
                 const listToUse = subDests.length > 0 ? subDests : destRes.data;
                 setDestinations(listToUse.length > 0 ? listToUse : DEFAULT_DESTINATIONS);
                 setBlogs(blogsRes.data.blogs || blogsRes.data || []);
@@ -83,6 +83,7 @@ const Destinations = () => {
     const normalizedQuery = trNormalize(searchQuery);
     
     const filteredDestinations = destinations.filter(dest => {
+        if (!dest) return false;
         if (!normalizedQuery) return true;
         const normName = trNormalize(dest.name);
         const normDesc = trNormalize(dest.description);
@@ -90,12 +91,13 @@ const Destinations = () => {
     });
 
     const filteredBlogs = blogs.filter(blog => {
+        if (!blog) return false;
         if (!normalizedQuery) return false;
         const normTitle = trNormalize(blog.title);
         const normContent = trNormalize(blog.content);
-        const destName = blog.destination 
-            ? (typeof blog.destination === 'object' ? blog.destination.name : blog.destination)
-            : '';
+        const destName = (blog.destination && typeof blog.destination === 'object')
+            ? blog.destination.name 
+            : (blog.destination || '');
         const normDest = trNormalize(destName);
 
         return normTitle.includes(normalizedQuery) || normDest.includes(normalizedQuery) || normContent.includes(normalizedQuery);

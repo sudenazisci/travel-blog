@@ -36,8 +36,11 @@ const AdminSettings = () => {
             // Ideally backend PUT endpoint expects IDs.
             // So on frontend load, we should map them to IDs if they are objects.
             const data = res.data;
-            if (data.featuredBlogs && data.featuredBlogs.length > 0 && typeof data.featuredBlogs[0] === 'object') {
-                data.featuredBlogs = data.featuredBlogs.map(b => b._id);
+            if (data.featuredBlogs && data.featuredBlogs.length > 0) {
+                data.featuredBlogs = data.featuredBlogs
+                    .filter(Boolean)
+                    .map(b => (typeof b === 'object' && b !== null ? b._id : b))
+                    .filter(Boolean);
             }
             setSettings(prev => ({ ...prev, ...data }));
         } catch (err) { console.error(err); }
@@ -319,18 +322,18 @@ const AdminSettings = () => {
                                 value=""
                             >
                                 <option value="" disabled>Blog Seçin...</option>
-                                {allBlogs.map(blog => (
+                                {(allBlogs || []).filter(b => b && b._id).map(blog => (
                                     <option key={blog._id} value={blog._id}>{blog.title}</option>
                                 ))}
                             </select>
                         </div>
 
                         <div className="space-y-2">
-                            {(settings.featuredBlogs || []).map(blogId => {
-                                const blog = allBlogs.find(b => b._id === blogId);
+                            {(settings.featuredBlogs || []).filter(Boolean).map(blogId => {
+                                const blog = (allBlogs || []).find(b => b && b._id === blogId);
                                 return (
                                     <div key={blogId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                        <span className="text-sm font-medium text-gray-700">{blog ? blog.title : 'Yükleniyor...'}</span>
+                                        <span className="text-sm font-medium text-gray-700">{blog ? blog.title : 'Silinmiş / Yükleniyor...'}</span>
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveFeaturedBlog(blogId)}
@@ -397,12 +400,11 @@ const AdminSettings = () => {
                     </div>
 
                     <div className="border-t border-gray-100 pt-6">
-                    <div className="border-t border-gray-100 pt-6">
                         <h4 className="text-lg font-bold text-gray-800 mb-4">Harita Ayarları</h4>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Keşif Haritası Ülke Sayısı (Harita İçinde Görünür)</label>
                             <input type="text" name="mapVisitedCountryCount" value={settings.mapVisitedCountryCount || '60'} onChange={handleChange} placeholder="Örn: 60" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent" />
-                            <p className="text-xs text-gray-400 mt-1">Ana sayfadaki Keşif Haritasının sol üst köşesinde "ROTA HARİTASI • 60 ÜLKE" şeklinde görünür.</p>
+                            <p className="text-xs text-gray-400 mt-1">Ana sayfadaki Keşif Haritasının sol üst köşesinde "60 ÜLKE" şeklinde görünür.</p>
                         </div>
                     </div>
 

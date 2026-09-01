@@ -69,18 +69,18 @@ const Navbar = () => {
         fetchData();
     }, []);
 
-    const getChildren = (parentId) => destinations.filter(d => (d.parent && (d.parent === parentId || d.parent._id === parentId)));
-    const dbRegions = destinations.filter(d => d.isRegion || !d.parent);
+    const getChildren = (parentId) => destinations.filter(d => d && d.parent && (d.parent === parentId || (typeof d.parent === 'object' && d.parent._id === parentId) || d.parent._id === parentId));
+    const dbRegions = destinations.filter(d => d && (d.isRegion || !d.parent));
 
     const regionMenuItems = orderedRegions.map(name => {
-        return dbRegions.find(d => 
+        return dbRegions.find(d => d && d.name && (
             d.name.trim().toUpperCase() === name.trim().toUpperCase() ||
             d.name.replace(/[Iİiı]/g, 'i').toLowerCase() === name.replace(/[Iİiı]/g, 'i').toLowerCase()
-        );
+        ));
     }).filter(Boolean);
 
     dbRegions.forEach(d => {
-        if (!regionMenuItems.some(r => r._id === d._id)) {
+        if (d && d._id && !regionMenuItems.some(r => r && r._id === d._id)) {
             regionMenuItems.push(d);
         }
     });

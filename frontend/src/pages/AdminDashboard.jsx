@@ -91,8 +91,8 @@ const AdminDashboard = () => {
         const fetchDashboardData = async () => {
             try {
                 const [blogsRes, adsRes, settingsRes] = await Promise.all([
-                    axios.get(`${API_BASE}/api/blogs?limit=100`),
-                    axios.get(`${API_BASE}/api/ads`),
+                    axios.get(`${API_BASE}/api/blogs?limit=100&includeDrafts=true`),
+                    axios.get(`${API_BASE}/api/ads?all=true`),
                     axios.get(`${API_BASE}/api/settings`)
                 ]);
 
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
     let totalWords = 0;
     let totalScoreSum = 0;
 
-    const blogMetrics = blogs.map(blog => {
+    const blogMetrics = blogs.filter(Boolean).map(blog => {
         const metrics = calculateSeoScore(blog);
         totalWords += metrics.wordCount;
         totalScoreSum += metrics.score;
@@ -176,6 +176,7 @@ const AdminDashboard = () => {
     // Filtered Table
     const normalizedFilter = trNormalize(filterQuery);
     const filteredBlogMetrics = blogMetrics.filter(blog => {
+        if (!blog) return false;
         if (!normalizedFilter) return true;
         const normTitle = trNormalize(blog.title);
         const normDest = trNormalize(blog.destination?.name || '');

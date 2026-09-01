@@ -71,7 +71,7 @@ const BlogDetail = () => {
         </div>
     );
 
-    const currentIndex = allBlogs.findIndex(b => b._id === blog._id);
+    const currentIndex = (allBlogs || []).findIndex(b => b && blog && b._id === blog._id);
     const prevPost = currentIndex > 0 ? allBlogs[currentIndex - 1] : null;
     const nextPost = (currentIndex >= 0 && currentIndex < allBlogs.length - 1) ? allBlogs[currentIndex + 1] : null;
 
@@ -123,10 +123,10 @@ const BlogDetail = () => {
                         <header className="mb-10 text-center max-w-3xl mx-auto">
                             {blog.destination && (
                                 <Link 
-                                    to={`/destination/${blog.destination._id || blog.destination}`} 
+                                    to={`/destination/${(typeof blog.destination === 'object' && blog.destination ? blog.destination._id : blog.destination) || ''}`} 
                                     className="inline-block font-mono text-xs font-bold text-[#A34828] uppercase tracking-[0.25em] mb-4 hover:underline"
                                 >
-                                    {blog.destination.name || 'Destinasyon'}
+                                    {(typeof blog.destination === 'object' && blog.destination ? blog.destination.name : 'Destinasyon') || 'Destinasyon'}
                                 </Link>
                             )}
                             

@@ -9,6 +9,9 @@ const Blog = require('../models/Blog');
 router.get('/', async (req, res) => {
     try {
         let query = {};
+        if (req.query.includeDrafts !== 'true') {
+            query.isDraft = { $ne: true };
+        }
         if (req.query.destination) {
             const Destination = require('../models/Destination');
             const childDests = await Destination.find({ parent: req.query.destination }, '_id');
@@ -83,7 +86,7 @@ router.post('/:id/view', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findById(req.params.id).populate('destination');
         if (!blog) {
             return res.status(404).json({ msg: 'Blog not found' });
         }
@@ -101,7 +104,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create a blog
 // @access  Private
 router.post('/', auth, async (req, res) => {
-    const { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition } = req.body;
+    const { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition, isDraft, category, country, city, travelDate } = req.body;
 
     try {
         const newBlog = new Blog({
@@ -112,7 +115,12 @@ router.post('/', auth, async (req, res) => {
             slug,
             metaTitle,
             metaDescription,
-            imagePosition: imagePosition || 'center'
+            imagePosition: imagePosition || '50%',
+            isDraft: isDraft !== undefined ? isDraft : false,
+            category,
+            country,
+            city,
+            travelDate
         });
 
         const blog = await newBlog.save();
@@ -127,7 +135,7 @@ router.post('/', auth, async (req, res) => {
 // @desc    Update a blog
 // @access  Private
 router.put('/:id', auth, async (req, res) => {
-    const { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition } = req.body;
+    const { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition, isDraft, category, country, city, travelDate } = req.body;
 
     try {
         let blog = await Blog.findById(req.params.id);
@@ -136,14 +144,19 @@ router.put('/:id', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Blog not found' });
         }
 
-        if (title) blog.title = title;
-        if (content) blog.content = content;
-        if (image) blog.image = image;
-        if (destination) blog.destination = destination;
-        if (slug) blog.slug = slug;
-        if (metaTitle) blog.metaTitle = metaTitle;
-        if (metaDescription) blog.metaDescription = metaDescription;
-        if (imagePosition) blog.imagePosition = imagePosition;
+        if (title !== undefined) blog.title = title;
+        if (content !== undefined) blog.content = content;
+        if (image !== undefined) blog.image = image;
+        if (destination !== undefined) blog.destination = destination;
+        if (slug !== undefined) blog.slug = slug;
+        if (metaTitle !== undefined) blog.metaTitle = metaTitle;
+        if (metaDescription !== undefined) blog.metaDescription = metaDescription;
+        if (imagePosition !== undefined) blog.imagePosition = imagePosition;
+        if (isDraft !== undefined) blog.isDraft = isDraft;
+        if (category !== undefined) blog.category = category;
+        if (country !== undefined) blog.country = country;
+        if (city !== undefined) blog.city = city;
+        if (travelDate !== undefined) blog.travelDate = travelDate;
 
         await blog.save();
         res.json(blog);

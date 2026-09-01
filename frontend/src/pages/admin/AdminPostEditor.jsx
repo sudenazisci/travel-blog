@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import API_BASE from '../../api';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -21,7 +21,8 @@ const AdminPostEditor = () => {
         metaDescription: '',
         destination: '',
         region: '',
-        imagePosition: '50%'
+        imagePosition: '50%',
+        isDraft: false
     });
 
     const [destinations, setDestinations] = useState([]);
@@ -58,19 +59,20 @@ const AdminPostEditor = () => {
                 slug: blog.slug || '',
                 metaTitle: blog.metaTitle || '',
                 metaDescription: blog.metaDescription || '',
-                destination: blog.destination?._id || blog.destination || '',
-                region: blog.destination?.parent || '',
-                imagePosition: blog.imagePosition || '50%'
+                destination: (blog.destination && typeof blog.destination === 'object') ? blog.destination._id : (blog.destination || ''),
+                region: blog.destination?.parent ? (typeof blog.destination.parent === 'object' ? blog.destination.parent._id : blog.destination.parent) : '',
+                imagePosition: blog.imagePosition || '50%',
+                isDraft: blog.isDraft || false
             });
 
             if (blog.destination) {
-                const destId = blog.destination._id || blog.destination;
+                const destId = (typeof blog.destination === 'object' && blog.destination) ? blog.destination._id : blog.destination;
                 // Try to find full destination object in current list or fetch if needed
                 // For now, rely on what we have or just set what we know.
                 // If the blog has a populated destination with parent, use it.
                 const destObj = blog.destination;
                 if (destObj && destObj.parent) {
-                    setFormData(prev => ({ ...prev, region: destObj.parent._id || destObj.parent }));
+                    setFormData(prev => ({ ...prev, region: (typeof destObj.parent === 'object' && destObj.parent) ? destObj.parent._id : destObj.parent }));
                 }
             }
         } catch (err) { console.error(err); }
@@ -182,8 +184,8 @@ const AdminPostEditor = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e, targetDraftState = false) => {
+        if (e && e.preventDefault) e.preventDefault();
         const token = localStorage.getItem('token');
         const config = { headers: { 'x-auth-token': token } };
 
@@ -210,7 +212,11 @@ const AdminPostEditor = () => {
                 finalDestinationId = formData.region; // Fallback to region
             }
 
-            const payload = { ...formData, destination: finalDestinationId };
+            const payload = { 
+                ...formData, 
+                destination: finalDestinationId,
+                isDraft: targetDraftState
+            };
 
             if (id) {
                 await axios.put(`${API_BASE}/api/blogs/${id}`, payload, config);
@@ -301,7 +307,7 @@ const AdminPostEditor = () => {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent"
                             >
                                 <option value="">Bir Bölge Seçin...</option>
-                                {destinations.filter(d => d.isRegion).map(dest => (
+                                {(destinations || []).filter(d => d && d.isRegion).map(dest => (
                                     <option key={dest._id} value={dest._id}>{dest.name}</option>
                                 ))}
                             </select>
@@ -343,8 +349,8 @@ const AdminPostEditor = () => {
                                 >
                                     <option value="">Bir Şehir Seçin...</option>
                                     <option value="NEW" className="font-bold text-accent">+ Yeni Şehir Ekle</option>
-                                    {destinations
-                                        .filter(d => d.parent === formData.region || (d.parent && d.parent._id === formData.region))
+                                    {(destinations || [])
+                                        .filter(d => d && (d.parent === formData.region || (d.parent && (d.parent._id === formData.region || (typeof d.parent === 'object' && d.parent._id === formData.region)))))
                                         .map(dest => (
                                             <option key={dest._id} value={dest._id}>{dest.name}</option>
                                         ))}
@@ -402,12 +408,27 @@ const AdminPostEditor = () => {
                             </button>
                         )}
                     </div>
-                    <div className="flex gap-4">
-                        <button type="button" onClick={() => navigate('/admin/posts')} className="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex gap-3 items-center">
+                        <button 
+                            type="button" 
+                            onClick={() => navigate('/admin/posts')} 
+                            className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                        >
                             İptal
                         </button>
-                        <button type="submit" className="px-6 py-2 bg-primary text-white font-medium rounded-lg hover:bg-accent transition-colors shadow-md">
-                            {id ? 'Hikayeyi Güncelle' : 'Hikayeyi Yayınla'}
+                        <button 
+                            type="button" 
+                            onClick={(e) => handleSubmit(e, true)} 
+                            className="px-4 py-2 border border-amber-300 bg-amber-50 text-amber-800 font-medium rounded-lg hover:bg-amber-100 transition-colors text-sm"
+                        >
+                            📁 Taslak Kaydet
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={(e) => handleSubmit(e, false)} 
+                            className="px-6 py-2 bg-primary text-white font-medium rounded-lg hover:bg-accent transition-colors shadow-md text-sm"
+                        >
+                            🚀 {id ? 'Güncelle & Yayınla' : 'Yayına Al'}
                         </button>
                     </div>
                 </div>

@@ -18,22 +18,27 @@ const seedAdmin = async () => {
         const hashedPassword = await bcrypt.hash('admin123', salt);
 
         // Check if admin exists
-        let admin = await User.findOne({ email: 'admin@example.com' });
+        let admin = await User.findOne({ email: 'ceylan.me@outlook.com' });
+        if (!admin) {
+            admin = await User.findOne({ email: 'admin@example.com' });
+        }
+
         if (admin) {
+            admin.email = 'ceylan.me@outlook.com';
             admin.password = hashedPassword;
             await admin.save();
-            console.log('Admin user updated: admin@example.com / admin123');
+            console.log('Admin user updated: ceylan.me@outlook.com / admin123');
             process.exit();
         }
 
         // Create Admin
         admin = new User({
-            email: 'admin@example.com',
+            email: 'ceylan.me@outlook.com',
             password: hashedPassword
         });
 
         await admin.save();
-        console.log('Admin created: admin@example.com / admin123');
+        console.log('Admin created: ceylan.me@outlook.com / admin123');
         process.exit();
     } catch (error) {
         console.error(error);

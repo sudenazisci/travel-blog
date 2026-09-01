@@ -48,16 +48,16 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
 
             <main className="flex-grow">
                 {/* Hero */}
-                <section className="py-16 md:py-24 border-b border-[#1A1918]/15">
+                <section className="py-12 md:py-24 border-b border-[#1A1918]/15">
                     <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                             
                             <div className="lg:col-span-7 space-y-6">
                                 <span className="font-mono text-[10px] font-bold text-[#A34828] uppercase tracking-[0.25em] block">
                                     CEYLAN’IN SEYAHAT GÜNLÜĞÜ
                                 </span>
 
-                                <h1 className="font-serif text-4xl sm:text-6xl text-[#1A1918] font-normal leading-[1.1] tracking-tight">
+                                <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#1A1918] font-normal leading-[1.1] tracking-tight">
                                     {settings?.aboutTitle || 'Dünyayı keşfetmek, anılar biriktirmek ve ilham vermek için yoldayız.'}
                                 </h1>
 
@@ -74,13 +74,13 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                             </div>
 
                             <div className="lg:col-span-5">
-                                <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-3">
+                                <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-2.5 sm:p-3">
                                     <img
                                         src={settings?.aboutHeroImage || "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&auto=format&fit=crop&q=80"}
                                         alt="Seyahat Görseli"
-                                        className="w-full h-[400px] object-cover"
+                                        className="w-full h-[260px] sm:h-[400px] object-cover"
                                     />
-                                    <div className="pt-3 font-mono text-[10px] uppercase text-[#78746D] flex justify-between">
+                                    <div className="pt-2 font-mono text-[10px] uppercase text-[#78746D] flex justify-between">
                                         <span>{settings?.aboutHeroImageCaption || "KAPADOKYA, TÜRKİYE"}</span>
                                         <span>{settings?.aboutHeroImageCoords || "38.6431° N · 34.8289° E"}</span>
                                     </div>
@@ -92,29 +92,29 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                 </section>
 
                 {/* Narrative */}
-                <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-20 border-b border-[#1A1918]/15">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div className="lg:col-span-5">
-                            <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-3">
-                                <img
-                                    src={fullImgUrl}
-                                    alt="Ceylan"
-                                    className="w-full h-[460px] object-cover"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="lg:col-span-7 space-y-6">
+                <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-12 md:py-20 border-b border-[#1A1918]/15">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                        <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
                             <span className="font-mono text-[10px] font-bold text-[#A34828] uppercase tracking-[0.25em] block">
                                 HİKAYEM
                             </span>
 
-                            <h2 className="font-serif text-3xl sm:text-4xl text-[#1A1918] font-normal">
+                            <h2 className="font-serif text-2xl sm:text-4xl text-[#1A1918] font-normal">
                                 {storyTitle}
                             </h2>
 
                             <div className="font-sans text-sm sm:text-base text-[#4A4744] font-light leading-relaxed whitespace-pre-line space-y-4">
                                 {storyContent}
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-5 order-2 lg:order-1">
+                            <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-2.5 sm:p-3">
+                                <img
+                                    src={fullImgUrl}
+                                    alt="Ceylan"
+                                    className="w-full h-[280px] sm:h-[460px] object-cover"
+                                />
                             </div>
                         </div>
                     </div>

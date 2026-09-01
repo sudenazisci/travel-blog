@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/authMiddleware');
 const Destination = require('../models/Destination');
 
 // GET All
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST New
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const destination = new Destination({
         name: req.body.name,
         image: req.body.image,
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT Update
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     try {
         const updatedDestination = await Destination.findByIdAndUpdate(
             req.params.id,
@@ -48,7 +49,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         await Destination.findByIdAndDelete(req.params.id);
         res.json({ message: 'Deleted Destination' });

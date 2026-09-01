@@ -4,19 +4,20 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
+const auth = require('../middleware/authMiddleware');
 
 // Configure Multer Storage
 const storage = multer.diskStorage({
     destination(req, file, cb) {
         const uploadDir = path.join(__dirname, '../uploads');
-        // Create directory if it doesn't exist
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
         cb(null, uploadDir);
     },
     filename(req, file, cb) {
-        cb(null, `${Date.now()}${path.extname(file.originalname)}`);
+        const sanitized = file.originalname.replace(/[^a-zA-Z0-9.]/g, '_');
+        cb(null, `${Date.now()}_${sanitized}`);
     }
 });
 
@@ -28,12 +29,13 @@ const checkFileType = (file, cb) => {
     if (extname && mimetype) {
         return cb(null, true);
     } else {
-        cb('Images only!');
+        cb(new Error('Yalnızca resim dosyaları yükleyebilirsiniz (JPG, PNG, WEBP, GIF).'));
     }
 };
 
 const upload = multer({
     storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB Max File Size
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     }
@@ -41,9 +43,10 @@ const upload = multer({
 
 // @route   POST /api/upload
 // @desc    Upload an image
-router.post('/', upload.single('image'), async (req, res) => {
+// @access  Private
+router.post('/', auth, upload.single('image'), async (req, res) => {
     if (!req.file) {
-        return res.status(400).send('Resim yüklenemedi.');
+        return res.status(400).json({ msg: 'Resim yüklenemedi.' });
     }
 
     try {
@@ -53,7 +56,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 
         // Resmin orijinal kalitesini bozmadan (%100) WebP optimizasyonu
         await sharp(originalPath)
-            .webp({ quality: 100, lossless: true })
+            .webp({ quality: 90 })
             .toFile(newPath);
 
         // Orijinal ham dosyayı sil
@@ -67,16 +70,16 @@ router.post('/', upload.single('image'), async (req, res) => {
         });
     } catch (error) {
         console.error('Sharp Image Processing Error:', error);
-        res.status(500).send('Resim işlenirken sunucu hatası oluştu.');
+        res.status(500).json({ msg: 'Resim işlenirken sunucu hatası oluştu.' });
     }
 });
 
 // @route   GET /api/upload/files
 // @desc    List all uploaded images
+// @access  Public / Admin
 router.get('/files', (req, res) => {
     const directoryPath = path.join(__dirname, '../uploads');
 
-    // Create directory if it doesn't exist
     if (!fs.existsSync(directoryPath)) {
         fs.mkdirSync(directoryPath, { recursive: true });
         return res.json([]);
@@ -84,21 +87,34 @@ router.get('/files', (req, res) => {
 
     fs.readdir(directoryPath, (err, files) => {
         if (err) {
-            return res.status(500).send('Unable to scan files!');
+            return res.status(500).json({ msg: 'Dosyalar okunamadı.' });
         }
-        // Filter for images and map to full URLs
-        // Note: In production you might want to return full URLs including host
-        // For now, we return relative paths which work on the frontend if configured correctly
+
         const fileInfos = files
             .filter(file => /\.(jpg|jpeg|png|webp|gif)$/i.test(file))
             .map(file => ({
                 name: file,
-                url: `http://localhost:5000/uploads/${file}`
+                url: `/uploads/${file}`
             }))
-            .reverse(); // Newest first usually (but readdir order isn't guaranteed, normally sort by time would be better)
+            .reverse();
 
         res.json(fileInfos);
     });
+});
+
+// @route   DELETE /api/upload/:filename
+// @desc    Delete an uploaded image
+// @access  Private
+router.delete('/:filename', auth, (req, res) => {
+    const filename = path.basename(req.params.filename); // Sanitize filename to prevent path traversal
+    const filePath = path.join(__dirname, '../uploads', filename);
+
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        return res.json({ msg: 'Resim silindi.' });
+    } else {
+        return res.status(404).json({ msg: 'Dosya bulunamadı.' });
+    }
 });
 
 module.exports = router;

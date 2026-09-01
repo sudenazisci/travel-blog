@@ -16,18 +16,19 @@ const DestinationPage = () => {
             setLoading(true);
             try {
                 const allDest = await axios.get(`${API_BASE}/api/destinations`);
-                const currentDest = allDest.data.find(d => d._id === id);
+                const currentDest = allDest.data.find(d => d && d._id === id);
                 setDestination(currentDest);
 
                 if (currentDest) {
                     const blogsRes = await axios.get(`${API_BASE}/api/blogs`);
                     const childrenIds = allDest.data
-                        .filter(d => d.parent && (d.parent === id || d.parent._id === id))
+                        .filter(d => d && d.parent && (d.parent === id || d.parent._id === id || (typeof d.parent === 'object' && d.parent._id === id)))
                         .map(d => d._id);
 
                     const filteredBlogs = blogsRes.data.filter(b => {
-                        const blogDestId = typeof b.destination === 'object' ? b.destination._id : b.destination;
-                        return blogDestId === id || childrenIds.includes(blogDestId);
+                        if (!b) return false;
+                        const blogDestId = b.destination ? (typeof b.destination === 'object' ? b.destination._id : b.destination) : null;
+                        return blogDestId === id || (blogDestId && childrenIds.includes(blogDestId));
                     });
 
                     setBlogs(filteredBlogs);

@@ -19,7 +19,7 @@ const Contact = () => {
     const handleCopyEmail = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        navigator.clipboard.writeText('sudenazisci@gmail.com');
+        navigator.clipboard.writeText('ceylan.me@outlook.com');
         setCopiedEmail(true);
         setTimeout(() => setCopiedEmail(false), 2000);
     };
@@ -72,7 +72,7 @@ const Contact = () => {
                                         Doğrudan İletişim
                                     </h3>
                                     <p className="font-mono text-xs text-[#1A1918] font-bold pt-1 break-all">
-                                        sudenazisci@gmail.com
+                                        ceylan.me@outlook.com
                                     </p>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@ const Contact = () => {
                                     <span>{copiedEmail ? 'Kopyalandı ✓' : 'Adresi Kopyala'}</span>
                                 </button>
                                 <a
-                                    href="mailto:sudenazisci@gmail.com"
+                                    href="mailto:ceylan.me@outlook.com"
                                     className="text-[#1A1918] hover:text-[#A34828] transition-colors"
                                 >
                                     <ArrowUpRight size={18} />
@@ -191,7 +191,7 @@ const Contact = () => {
 
                             <div className="pt-3 border-t border-[#1A1918]/10 flex items-center justify-between">
                                 <a
-                                    href="mailto:sudenazisci@gmail.com?subject=Marka%20İş%20Birliği%20Teklifi"
+                                    href="mailto:ceylan.me@outlook.com?subject=Marka%20İş%20Birliği%20Teklifi"
                                     className="font-mono text-[11px] font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                                 >
                                     <span>Teklif Gönder</span>
