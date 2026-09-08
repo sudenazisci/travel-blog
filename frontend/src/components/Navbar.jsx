@@ -8,6 +8,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 const Navbar = () => {
     const [siteTitle, setSiteTitle] = useState('Ceylan.m.e.');
     const [destinations, setDestinations] = useState([]);
+    const [activeDestIds, setActiveDestIds] = useState(new Set());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [openRegionId, setOpenRegionId] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -55,13 +56,24 @@ const Navbar = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [settingsRes, destRes] = await Promise.all([
+                const [settingsRes, destRes, blogsRes] = await Promise.all([
                     axios.get(`${API_BASE}/api/settings`),
-                    axios.get(`${API_BASE}/api/destinations`)
+                    axios.get(`${API_BASE}/api/destinations`),
+                    axios.get(`${API_BASE}/api/blogs?limit=100`)
                 ]);
 
                 if (settingsRes.data.siteTitle) setSiteTitle(settingsRes.data.siteTitle);
                 setDestinations(destRes.data);
+
+                const activeBlogs = blogsRes.data.blogs || blogsRes.data || [];
+                const blogDestIds = new Set(
+                    activeBlogs
+                        .filter(b => b && !b.isDraft)
+                        .map(b => (b.destination && typeof b.destination === 'object') ? b.destination._id : b.destination)
+                        .filter(Boolean)
+                        .map(id => String(id))
+                );
+                setActiveDestIds(blogDestIds);
             } catch (err) { 
                 console.error('Navbar fetch error:', err); 
             }
@@ -72,7 +84,10 @@ const Navbar = () => {
     const getChildren = (parentId) => destinations.filter(d => {
         if (!d || !d.parent) return false;
         const pId = typeof d.parent === 'object' ? d.parent._id : d.parent;
-        return String(pId) === String(parentId);
+        const matchesParent = String(pId) === String(parentId);
+        // Only return sub-destinations that have at least 1 active published blog
+        const hasActiveBlog = activeDestIds.has(String(d._id));
+        return matchesParent && hasActiveBlog;
     });
     const dbRegions = destinations.filter(d => d && (d.isRegion || !d.parent));
 
