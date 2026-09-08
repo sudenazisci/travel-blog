@@ -5,9 +5,9 @@ import { ArrowRight, ArrowLeft } from 'lucide-react';
 import API_BASE from '../api';
 
 const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
-    const items = (featuredBlogs && featuredBlogs.length > 0)
-        ? featuredBlogs
-        : (blogs && blogs.length > 0) ? blogs.slice(0, 5) : [];
+    const validFeatured = (featuredBlogs || []).filter(b => b && (b._id || b.title));
+    const validBlogs = (blogs || []).filter(b => b && (b._id || b.title));
+    const items = validFeatured.length > 0 ? validFeatured : validBlogs.slice(0, 5);
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);

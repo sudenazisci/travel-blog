@@ -18,6 +18,10 @@ router.get('/', async (req, res) => {
             settings = new SiteSettings();
             await settings.save();
         }
+        // Filter out null/deleted blog references if any
+        if (Array.isArray(settings.featuredBlogs)) {
+            settings.featuredBlogs = settings.featuredBlogs.filter(Boolean);
+        }
         res.json(settings);
     } catch (err) {
         console.error('Settings Route Error:', err);
