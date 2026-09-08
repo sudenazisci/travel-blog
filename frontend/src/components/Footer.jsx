@@ -16,14 +16,10 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 pb-8 border-b border-[#1A1918]/15">
                     
                     {/* Brand Column */}
-                    <div className="lg:col-span-5 space-y-2.5">
+                    <div className="lg:col-span-4 space-y-3">
                         <Link to="/" className="inline-block font-serif text-2xl font-bold text-[#1A1918] tracking-tight hover:text-[#A34828] transition-colors">
                             Ceylan.m.e.
                         </Link>
-                        
-                        <p className="font-serif text-sm text-[#1A1918] italic leading-relaxed max-w-sm">
-                            “Kadim yollarında kaybolmak ve özgün seyahat hikayeleri biriktirmek için kişisel seyahat günlüğü.”
-                        </p>
 
                         <div className="flex items-center gap-3 pt-1">
                             <a 

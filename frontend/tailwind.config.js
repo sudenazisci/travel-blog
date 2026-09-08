@@ -23,9 +23,9 @@ export default {
                 pine: '#2C3E35',
             },
             fontFamily: {
-                serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-                display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-                sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                serif: ['Optima', 'URW Classico', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                display: ['Optima', 'URW Classico', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                sans: ['Optima', 'URW Classico', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
                 mono: ['"Space Mono"', 'monospace'],
             },
         },

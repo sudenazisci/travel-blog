@@ -105,7 +105,7 @@ router.post('/verify-otp', async (req, res) => {
 
         jwt.sign(
             payload,
-            process.env.JWT_SECRET,
+            process.env.JWT_SECRET || 'ceylanme_jwt_secret_key_2026',
             { expiresIn: 86400 }, // 24 hours
             (err, token) => {
                 if (err) throw err;

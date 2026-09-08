@@ -19,6 +19,8 @@ const DEFAULT_SETTINGS = {
 
 const Home = () => {
     const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
@@ -52,6 +54,8 @@ const Home = () => {
         const limit = 12;
 
         const fetchBlogs = async () => {
+            setLoading(true);
+            setError(null);
             try {
                 let url = `${API_BASE}/api/blogs?page=${page}&limit=${limit}`;
                 if (query) url += `&search=${query}`;
@@ -65,10 +69,19 @@ const Home = () => {
                         totalBlogs: res.data.totalBlogs
                     });
                 } else {
-                    setBlogs(res.data);
+                    const fetched = Array.isArray(res.data) ? res.data : [];
+                    setBlogs(fetched);
+                    setPagination({
+                        currentPage: 1,
+                        totalPages: 1,
+                        totalBlogs: fetched.length
+                    });
                 }
-            } catch (error) {
-                console.error(error);
+            } catch (err) {
+                console.error('Fetch blogs error:', err);
+                setError('Blog yazıları yüklenirken bir hata oluştu.');
+            } finally {
+                setLoading(false);
             }
         };
         fetchBlogs();
@@ -116,7 +129,7 @@ const Home = () => {
                         animation: scrollText 60s linear infinite;
                     }
                 `}</style>
-                <div className="animate-scroll whitespace-nowrap flex items-center font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#1A1918]">
+                <div className="animate-scroll whitespace-nowrap flex items-center font-sans text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#1A1918]">
                     {[...Array(8)].map((_, i) => (
                         <span key={i} className="mx-8 flex items-center gap-4">
                             <span>{settings?.announcement || "VIETNAM VE TAYLAND SEYAHAT REHBERİ ÇOK YAKINDA"}</span>
@@ -135,22 +148,43 @@ const Home = () => {
 
                         <div id="blog-section" className="flex items-end justify-between pb-3 mb-6 border-b border-[#1A1918]/15 scroll-mt-20">
                             <div>
-                                <span className="font-mono text-[10px] font-bold text-[#A34828] uppercase tracking-[0.2em] block mb-0.5">
+                                <span className="font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-[0.2em] block mb-0.5">
                                     SEYAHAT YAZILARI
                                 </span>
                                 <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#1A1918]">
                                     {searchQuery ? `"${searchQuery}" Sonuçları` : "Son Eklenen Gezi Rehberleri"}
                                 </h2>
                             </div>
-                            <span className="font-mono text-[11px] text-[#78746D] hidden sm:block">
+                            <span className="font-sans text-[11px] text-[#78746D] hidden sm:block font-medium">
                                 Toplam {pagination.totalBlogs || blogs.length} İçerik
                             </span>
                         </div>
 
-                        {blogs.length === 0 ? (
+                        {loading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {[1, 2].map(n => (
+                                    <div key={n} className="animate-pulse flex flex-col space-y-3 pb-5 border-b border-[#1A1918]/15">
+                                        <div className="bg-[#EAE6DF] aspect-[16/9] w-full"></div>
+                                        <div className="h-4 bg-[#EAE6DF] w-1/4 rounded"></div>
+                                        <div className="h-6 bg-[#EAE6DF] w-3/4 rounded"></div>
+                                        <div className="h-4 bg-[#EAE6DF] w-full rounded"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : error ? (
+                            <div className="py-12 text-center border border-rose-200 bg-rose-50/50 p-6">
+                                <p className="font-serif text-lg text-rose-800 mb-2">{error}</p>
+                                <button 
+                                    onClick={() => window.location.reload()} 
+                                    className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#1A1918] text-white hover:bg-[#A34828] transition-colors cursor-pointer"
+                                >
+                                    Tekrar Dene
+                                </button>
+                            </div>
+                        ) : blogs.length === 0 ? (
                             <div className="py-12 text-center border border-[#1A1918]/15 bg-[#F4F0E8] p-6">
-                                <p className="font-serif text-lg text-[#1A1918] mb-1">Henüz bu kategoride yazı bulunamadı.</p>
-                                <p className="font-mono text-xs text-[#78746D]">Farklı bir arama yapabilir veya anasayfaya dönebilirsiniz.</p>
+                                <p className="font-serif text-lg text-[#1A1918] mb-1">Henüz yayınlanmış bir seyahat yazısı bulunamadı.</p>
+                                <p className="font-sans text-xs text-[#78746D]">Admin panelinden yeni bir yazı yayınlayabilirsiniz.</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -168,7 +202,7 @@ const Home = () => {
                                                     onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800'; }}
                                                 />
                                                 <div className="absolute top-3 left-3 z-10">
-                                                    <span className="font-mono text-[9px] font-bold text-[#1A1918] bg-[#FBF9F5] px-2.5 py-0.5 uppercase tracking-widest border border-[#1A1918]/15">
+                                                    <span className="font-sans text-[10px] font-bold text-[#1A1918] bg-[#FBF9F5] px-2.5 py-0.5 uppercase tracking-widest border border-[#1A1918]/15">
                                                         {blog.destination?.name || 'Seyahat'}
                                                     </span>
                                                 </div>
@@ -176,7 +210,7 @@ const Home = () => {
 
                                             <div className="flex-1 flex flex-col justify-between space-y-2">
                                                 <div>
-                                                    <div className="flex items-center gap-1.5 font-mono text-[10px] text-[#78746D] mb-1 uppercase tracking-wider">
+                                                    <div className="flex items-center gap-1.5 font-sans text-[11px] font-semibold text-[#78746D] mb-1 uppercase tracking-wider">
                                                         <Calendar size={11} className="text-[#A34828]" />
                                                         <time dateTime={blog.createdAt}>
                                                             {new Date(blog.createdAt || Date.now()).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -197,7 +231,7 @@ const Home = () => {
                                                 <div className="pt-2 border-t border-[#1A1918]/10 flex items-center justify-between mt-auto">
                                                     <Link 
                                                         to={`/blog/${blog._id}`} 
-                                                        className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1.5 min-h-[38px]"
+                                                        className="font-sans text-xs font-bold uppercase tracking-wider text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1.5 min-h-[38px]"
                                                     >
                                                         <span>Yazıyı Oku</span>
                                                         <ArrowRight size={12} className="transform group-hover:translate-x-1 transition-transform text-[#A34828]" />
@@ -210,7 +244,7 @@ const Home = () => {
                                         {index === 1 && (
                                             <div className="col-span-1 md:col-span-2 border border-[#1A1918]/15 bg-[#F4F0E8] p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 my-2">
                                                 <div className="space-y-1 text-center sm:text-left">
-                                                    <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-[0.2em] flex items-center gap-1 justify-center sm:justify-start">
+                                                    <span className="font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-[0.2em] flex items-center gap-1 justify-center sm:justify-start">
                                                         <Megaphone size={12} />
                                                         REKLAM & İŞ BİRLİĞİ
                                                     </span>
@@ -224,7 +258,7 @@ const Home = () => {
 
                                                 <Link
                                                     to="/contact"
-                                                    className="shrink-0 bg-[#1A1918] hover:bg-[#A34828] text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 transition-colors inline-flex items-center gap-1.5 min-h-[38px]"
+                                                    className="shrink-0 bg-[#1A1918] hover:bg-[#A34828] text-[#FBF9F5] font-sans text-xs font-bold uppercase tracking-widest px-5 py-2.5 transition-colors inline-flex items-center gap-1.5 min-h-[38px]"
                                                 >
                                                     <span>Reklam Ver / İletişim</span>
                                                     <ArrowRight size={12} />
@@ -243,12 +277,12 @@ const Home = () => {
                                     <button
                                         onClick={() => handlePageChange(pagination.currentPage - 1)}
                                         disabled={pagination.currentPage === 1}
-                                        className="w-8 h-8 flex items-center justify-center border border-[#1A1918]/20 bg-[#FBF9F5] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] disabled:opacity-30 transition-colors font-mono text-xs cursor-pointer"
+                                        className="w-8 h-8 flex items-center justify-center border border-[#1A1918]/20 bg-[#FBF9F5] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] disabled:opacity-30 transition-colors font-sans text-xs font-bold cursor-pointer"
                                     >
                                         ←
                                     </button>
 
-                                    <div className="flex items-center gap-1 font-mono text-xs">
+                                    <div className="flex items-center gap-1 font-sans text-xs font-bold">
                                         {[...Array(pagination.totalPages)].map((_, idx) => {
                                             const pageNum = idx + 1;
                                             return (
@@ -270,13 +304,13 @@ const Home = () => {
                                     <button
                                         onClick={() => handlePageChange(pagination.currentPage + 1)}
                                         disabled={pagination.currentPage === pagination.totalPages}
-                                        className="w-8 h-8 flex items-center justify-center border border-[#1A1918]/20 bg-[#FBF9F5] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] disabled:opacity-30 transition-colors font-mono text-xs cursor-pointer"
+                                        className="w-8 h-8 flex items-center justify-center border border-[#1A1918]/20 bg-[#FBF9F5] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] disabled:opacity-30 transition-colors font-sans text-xs font-bold cursor-pointer"
                                     >
                                         →
                                     </button>
                                 </div>
 
-                                <div className="font-mono text-[9px] uppercase text-[#78746D] tracking-widest">
+                                <div className="font-sans text-[10px] font-bold uppercase text-[#78746D] tracking-widest">
                                     SAYFA {pagination.currentPage} / {pagination.totalPages}
                                 </div>
                             </div>
@@ -284,27 +318,27 @@ const Home = () => {
                     </main>
 
                     {/* Compact Sidebar */}
-                    <aside className="w-full lg:w-1/4 space-y-5">
+                    <aside className="w-full lg:w-1/4 space-y-3">
                         
                         {/* Compact Instagram Card */}
                         <a
                             href={settings?.instagramPostUrl || 'https://www.instagram.com/ceylan.m.e/'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block p-3.5 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2.5 hover:border-[#A34828] transition-colors group cursor-pointer"
+                            className="block p-3 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2 hover:border-[#A34828] transition-colors group cursor-pointer"
                         >
-                            <div className="flex items-center justify-between border-b border-[#1A1918]/15 pb-2">
-                                <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest flex items-center gap-1">
+                            <div className="flex items-center justify-between border-b border-[#1A1918]/15 pb-1.5">
+                                <span className="font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-widest flex items-center gap-1">
                                     <Instagram size={12} />
                                     INSTAGRAM
                                 </span>
-                                <span className="font-mono text-[9px] font-bold text-[#1A1918]">
+                                <span className="font-sans text-[10px] font-bold text-[#1A1918]">
                                     {settings?.instagramFollowerCount || "104 Bin Takipçi"}
                                 </span>
                             </div>
 
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full overflow-hidden border border-[#A34828] shrink-0 bg-[#1A1918]">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-full overflow-hidden border border-[#A34828] shrink-0 bg-[#1A1918]">
                                     <img
                                         src={instagramAvatar}
                                         alt="Ceylan.m.e Instagram"
@@ -312,13 +346,13 @@ const Home = () => {
                                         onError={(e) => { e.currentTarget.src = '/youtube-avatar.jpg'; }}
                                     />
                                 </div>
-                                <div className="min-w-0 flex-1 font-mono text-xs">
+                                <div className="min-w-0 flex-1 font-sans text-[11px]">
                                     <span className="block font-bold text-[#1A1918] truncate">@ceylan.m.e</span>
-                                    <span className="text-[9px] text-[#78746D] block">Seyahat & Fotoğraf</span>
+                                    <span className="text-[10px] text-[#78746D] block">Seyahat & Fotoğraf</span>
                                 </div>
                             </div>
 
-                            <div className="w-full py-1.5 bg-[#1A1918] group-hover:bg-[#A34828] text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[34px] flex items-center justify-center">
+                            <div className="w-full py-1 bg-[#1A1918] group-hover:bg-[#A34828] text-[#FBF9F5] font-sans text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[30px] flex items-center justify-center">
                                 Takip Et ↗
                             </div>
                         </a>
@@ -328,38 +362,38 @@ const Home = () => {
                             href={settings?.youtubeUrl || 'https://www.youtube.com/@Ceylan.m.e'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block p-3.5 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2.5 hover:border-[#A34828] transition-colors group cursor-pointer"
+                            className="block p-3 border border-[#1A1918]/15 bg-[#F4F0E8] space-y-2 hover:border-[#A34828] transition-colors group cursor-pointer"
                         >
-                            <div className="flex items-center justify-between border-b border-[#1A1918]/15 pb-2">
-                                <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest flex items-center gap-1">
+                            <div className="flex items-center justify-between border-b border-[#1A1918]/15 pb-1.5">
+                                <span className="font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-widest flex items-center gap-1">
                                     <Youtube size={12} />
                                     YOUTUBE
                                 </span>
                             </div>
 
-                            <p className="font-sans text-xs text-[#4A4744] font-light leading-relaxed">
+                            <p className="font-sans text-[11px] text-[#2D2B29] leading-snug">
                                 Sinematik seyahat günlükleri ve gezinti rehberleri.
                             </p>
 
-                            <div className="w-full py-1.5 border border-[#1A1918] text-[#1A1918] group-hover:bg-[#1A1918] group-hover:text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[34px] flex items-center justify-center">
+                            <div className="w-full py-1 border border-[#1A1918] text-[#1A1918] group-hover:bg-[#1A1918] group-hover:text-[#FBF9F5] font-sans text-[10px] font-bold uppercase tracking-widest text-center transition-colors min-h-[30px] flex items-center justify-center">
                                 Abone Ol ↗
                             </div>
                         </a>
 
                         {/* Compact Advertising / Sponsorship Card */}
-                        <div className="p-3.5 border border-[#1A1918]/15 bg-[#FBF9F5] space-y-1.5">
-                            <span className="font-mono text-[9px] font-bold text-[#A34828] uppercase tracking-widest block">
+                        <div className="p-3 border border-[#1A1918]/15 bg-[#FBF9F5] space-y-1.5">
+                            <span className="font-sans text-[9px] font-bold text-[#A34828] uppercase tracking-widest block">
                                 SPONSORLUK
                             </span>
-                            <h3 className="font-serif text-base font-normal text-[#1A1918]">
+                            <h3 className="font-serif text-base font-normal text-[#1A1918] leading-tight">
                                 Reklam Vermek İster Misiniz?
                             </h3>
-                            <p className="font-sans text-xs text-[#4A4744] font-light leading-relaxed">
+                            <p className="font-sans text-[11px] text-[#2D2B29] leading-snug">
                                 Markanızı veya seyahat ürünlerinizi okurlarımızla buluşturun.
                             </p>
                             <Link 
                                 to="/contact" 
-                                className="inline-flex items-center gap-1 font-mono text-[10px] font-bold text-[#A34828] uppercase tracking-widest hover:underline pt-1 min-h-[32px]"
+                                className="inline-flex items-center gap-1 font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-widest hover:underline pt-0.5 min-h-[28px]"
                             >
                                 <span>Reklam İletişimi</span>
                                 <span>→</span>
@@ -382,7 +416,7 @@ const Home = () => {
                 </div>
 
                 <div className="relative border border-[#1A1918]/15 bg-[#F4F0E8] overflow-hidden h-[280px] sm:h-[320px]">
-                    <React.Suspense fallback={<div className="h-full flex items-center justify-center font-mono text-xs uppercase text-[#A34828]">Harita Yükleniyor...</div>}>
+                    <React.Suspense fallback={<div className="h-full flex items-center justify-center font-sans text-xs font-bold uppercase text-[#A34828]">Harita Yükleniyor...</div>}>
                         <WorldMap settings={settings} />
                     </React.Suspense>
                 </div>
@@ -391,7 +425,7 @@ const Home = () => {
             {/* Contact Invitation Section */}
             <section className="py-8 sm:py-10 bg-[#F4F0E8] border-t border-[#1A1918]/15 text-center relative overflow-hidden">
                 <div className="max-w-md mx-auto px-4 space-y-2">
-                    <span className="font-mono text-[9px] font-bold tracking-widest text-[#A34828] uppercase block">
+                    <span className="font-sans text-[10px] font-bold tracking-widest text-[#A34828] uppercase block">
                         ROTA SORULARIN İÇİN
                     </span>
 
@@ -406,7 +440,7 @@ const Home = () => {
                     <div className="flex items-center justify-center gap-3 pt-2">
                         <Link
                             to="/contact"
-                            className="bg-[#1A1918] text-[#FBF9F5] hover:bg-[#A34828] font-mono text-[10px] font-bold uppercase tracking-widest px-5 py-2 transition-colors inline-flex items-center gap-1 min-h-[36px]"
+                            className="bg-[#1A1918] text-[#FBF9F5] hover:bg-[#A34828] font-sans text-xs font-bold uppercase tracking-widest px-5 py-2 transition-colors inline-flex items-center gap-1 min-h-[36px]"
                         >
                             <span>Mesaj Gönder</span>
                             <span>→</span>
@@ -416,7 +450,7 @@ const Home = () => {
                             href={settings?.instagramPostUrl || "https://www.instagram.com/ceylan.m.e/"}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="border border-[#1A1918] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] font-mono text-[10px] font-bold uppercase tracking-widest px-4 py-2 transition-colors inline-flex items-center gap-1 min-h-[36px]"
+                            className="border border-[#1A1918] text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FBF9F5] font-sans text-xs font-bold uppercase tracking-widest px-4 py-2 transition-colors inline-flex items-center gap-1 min-h-[36px]"
                         >
                             <span>Instagram</span>
                             <span>↗</span>

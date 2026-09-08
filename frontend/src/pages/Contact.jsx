@@ -38,15 +38,15 @@ const Contact = () => {
                     
                     {/* LEFT COLUMN */}
                     <div className="lg:col-span-5 space-y-6">
-                        <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#A34828] uppercase block">
+                        <span className="font-sans text-[11px] font-bold tracking-[0.2em] text-[#A34828] uppercase block">
                             İLETİŞİM & ORTAKLIK
                         </span>
 
-                        <h1 className="font-serif text-4xl sm:text-6xl font-normal text-[#1A1918] leading-[1.1] tracking-tight">
+                        <h1 className="font-serif text-4xl sm:text-6xl font-normal text-[#1A1918] leading-[1.12] tracking-tight">
                             Birlikte yeni bir rota çizelim.
                         </h1>
 
-                        <p className="font-sans text-base text-[#4A4744] font-light leading-relaxed max-w-md">
+                        <p className="font-sans text-sm sm:text-base text-[#2D2B29] leading-relaxed max-w-md">
                             Bir seyahat önerisi, marka iş birliği teklifi veya yayın projeleriniz için doğrudan kanallarımdan bana ulaşabilirsiniz.
                         </p>
                     </div>
@@ -58,7 +58,7 @@ const Contact = () => {
                         <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-6 flex flex-col justify-between space-y-4 group hover:border-[#A34828] transition-colors shadow-xs">
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 font-mono text-xs font-bold">
+                                    <div className="flex items-center gap-2 font-sans text-xs font-bold">
                                         <span className="text-[#A34828]">01</span>
                                         <span className="text-[#1A1918] uppercase tracking-widest">E-POSTA</span>
                                     </div>
@@ -71,7 +71,7 @@ const Contact = () => {
                                     <h3 className="font-serif text-xl font-normal text-[#1A1918] group-hover:text-[#A34828] transition-colors">
                                         Doğrudan İletişim
                                     </h3>
-                                    <p className="font-mono text-xs text-[#1A1918] font-bold pt-1 break-all">
+                                    <p className="font-sans text-sm text-[#1A1918] font-semibold pt-1 break-all tracking-wide">
                                         ceylan.me@outlook.com
                                     </p>
                                 </div>
@@ -80,7 +80,7 @@ const Contact = () => {
                             <div className="pt-3 border-t border-[#1A1918]/10 flex items-center justify-between">
                                 <button
                                     onClick={handleCopyEmail}
-                                    className="font-mono text-[11px] font-bold text-[#78746D] hover:text-[#A34828] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                                    className="font-sans text-xs font-semibold text-[#78746D] hover:text-[#A34828] transition-colors inline-flex items-center gap-1 cursor-pointer uppercase tracking-wider"
                                 >
                                     {copiedEmail ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                                     <span>{copiedEmail ? 'Kopyalandı ✓' : 'Adresi Kopyala'}</span>
@@ -98,7 +98,7 @@ const Contact = () => {
                         <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-6 flex flex-col justify-between space-y-4 group hover:border-[#A34828] transition-colors shadow-xs">
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 font-mono text-xs font-bold">
+                                    <div className="flex items-center gap-2 font-sans text-xs font-bold">
                                         <span className="text-[#A34828]">02</span>
                                         <span className="text-[#1A1918] uppercase tracking-widest">INSTAGRAM</span>
                                     </div>
@@ -111,7 +111,7 @@ const Contact = () => {
                                     <h3 className="font-serif text-xl font-normal text-[#1A1918] group-hover:text-[#A34828] transition-colors">
                                         @ceylan.m.e
                                     </h3>
-                                    <p className="font-sans text-xs text-[#78746D] pt-1">
+                                    <p className="font-sans text-xs text-[#2D2B29] pt-1 leading-relaxed">
                                         Anlık seyahat hikayeleri & canlı rotalar
                                     </p>
                                 </div>
@@ -122,7 +122,7 @@ const Contact = () => {
                                     href={settings?.instagramPostUrl || "https://www.instagram.com/ceylan.m.e/"}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="font-mono text-[11px] font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
+                                    className="font-sans text-xs font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                                 >
                                     <span>Profili İncele</span>
                                     <ArrowUpRight size={14} />
@@ -134,7 +134,7 @@ const Contact = () => {
                         <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-6 flex flex-col justify-between space-y-4 group hover:border-[#A34828] transition-colors shadow-xs">
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 font-mono text-xs font-bold">
+                                    <div className="flex items-center gap-2 font-sans text-xs font-bold">
                                         <span className="text-[#A34828]">03</span>
                                         <span className="text-[#1A1918] uppercase tracking-widest">YOUTUBE</span>
                                     </div>
@@ -147,7 +147,7 @@ const Contact = () => {
                                     <h3 className="font-serif text-xl font-normal text-[#1A1918] group-hover:text-[#A34828] transition-colors">
                                         @Ceylan.m.e
                                     </h3>
-                                    <p className="font-sans text-xs text-[#78746D] pt-1">
+                                    <p className="font-sans text-xs text-[#2D2B29] pt-1 leading-relaxed">
                                         Sinematik seyahat günlükleri & rehberler
                                     </p>
                                 </div>
@@ -158,7 +158,7 @@ const Contact = () => {
                                     href={settings?.youtubeUrl || "https://www.youtube.com/@Ceylan.m.e"}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="font-mono text-[11px] font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
+                                    className="font-sans text-xs font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                                 >
                                     <span>Kanala Git</span>
                                     <ArrowUpRight size={14} />
@@ -170,7 +170,7 @@ const Contact = () => {
                         <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-6 flex flex-col justify-between space-y-4 group hover:border-[#A34828] transition-colors shadow-xs">
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 font-mono text-xs font-bold">
+                                    <div className="flex items-center gap-2 font-sans text-xs font-bold">
                                         <span className="text-[#A34828]">04</span>
                                         <span className="text-[#1A1918] uppercase tracking-widest">ORTAKLIK</span>
                                     </div>
@@ -183,7 +183,7 @@ const Contact = () => {
                                     <h3 className="font-serif text-xl font-normal text-[#1A1918] group-hover:text-[#A34828] transition-colors">
                                         Sponsorluk & Yayın
                                     </h3>
-                                    <p className="font-sans text-xs text-[#78746D] pt-1">
+                                    <p className="font-sans text-xs text-[#2D2B29] pt-1 leading-relaxed">
                                         Turizm kurulları, otel & marka ortaklıkları
                                     </p>
                                 </div>
@@ -192,7 +192,7 @@ const Contact = () => {
                             <div className="pt-3 border-t border-[#1A1918]/10 flex items-center justify-between">
                                 <a
                                     href="mailto:ceylan.me@outlook.com?subject=Marka%20İş%20Birliği%20Teklifi"
-                                    className="font-mono text-[11px] font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
+                                    className="font-sans text-xs font-bold text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                                 >
                                     <span>Teklif Gönder</span>
                                     <ArrowUpRight size={14} />

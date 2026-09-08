@@ -84,10 +84,10 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
         >
             {/* Header Bar */}
             <div className="flex items-center justify-between pb-2 mb-4 border-b border-[#1A1918]/15">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#A34828]">
+                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#A34828]">
                     ÖNE ÇIKAN SEYAHAT ROTALARI
                 </span>
-                <span className="font-mono text-[10px] text-[#78746D]">
+                <span className="font-sans text-[11px] font-bold text-[#78746D]">
                     0{currentIndex + 1} / 0{items.length}
                 </span>
             </div>
@@ -125,7 +125,7 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
                             >
                                 {/* Tag */}
                                 {(currentSlide.destination || currentSlide.category) && (
-                                    <span className="font-mono text-[10px] font-bold text-[#A34828] bg-[#FBF9F5] px-2.5 py-0.5 uppercase tracking-[0.2em] inline-block">
+                                    <span className="font-sans text-[10px] font-bold text-[#A34828] bg-[#FBF9F5] px-2.5 py-0.5 uppercase tracking-[0.2em] inline-block">
                                         {currentSlide.destination?.name || currentSlide.category || 'Öne Çıkan'}
                                     </span>
                                 )}
@@ -146,7 +146,7 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
                                 <div className="pt-1">
                                     <Link
                                         to={blogLink}
-                                        className="inline-flex items-center gap-2 bg-[#FBF9F5] text-[#1A1918] px-5 py-2 font-mono text-[11px] font-bold uppercase tracking-widest hover:bg-[#A34828] hover:text-white transition-all duration-300 group/btn"
+                                        className="inline-flex items-center gap-2 bg-[#FBF9F5] text-[#1A1918] px-5 py-2 font-sans text-xs font-bold uppercase tracking-widest hover:bg-[#A34828] hover:text-white transition-all duration-300 group/btn"
                                     >
                                         <span>Hikayeyi Oku</span>
                                         <ArrowRight size={12} className="transform group-hover/btn:translate-x-1 transition-transform" />

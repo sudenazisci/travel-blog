@@ -12,7 +12,7 @@ async function runBackendTests() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                email: 'admin@example.com', 
+                email: 'ceylan.me@outlook.com', 
                 password: 'admin123',
                 securityPin: '123456'
             })
@@ -21,14 +21,21 @@ async function runBackendTests() {
         if (!loginRes.ok) throw new Error(`Step 1 Login failed: ${JSON.stringify(loginData)}`);
         console.log('✅ Step 1 Login Success:', loginData.msg);
 
-        // 1b. Step 2: OTP Verification
+        // 1b. Step 2: Retrieve OTP from DB and Verify
         console.log('1b. Testing Admin Login Step 2 (OTP Verification)...');
+        const mongoose = require('./backend/node_modules/mongoose');
+        const User = require('./backend/models/User');
+        await mongoose.connect('mongodb://localhost:27017/travelblog');
+        const adminUser = await User.findOne({ email: 'ceylan.me@outlook.com' });
+        const realOtp = adminUser.otpCode;
+        console.log('   Retrieved generated OTP:', realOtp);
+
         const verifyRes = await fetch(`${API_BASE}/auth/verify-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                email: 'admin@example.com',
-                otpCode: '999999'
+                email: 'ceylan.me@outlook.com',
+                otpCode: realOtp
             })
         });
         const verifyData = await verifyRes.json();
@@ -53,11 +60,12 @@ async function runBackendTests() {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                title: 'TEST REHBERİ: Antigravity Otomatik Test Rotaları',
-                content: '<p>Bu bir otomasyon test blog yazısıdır. Gezi detayları ve rehber içerikleri başarıyla render edilmelidir.</p>',
-                metaDescription: 'Otomasyon test blog yazısı özet bilgisi.',
+                title: 'TEST BLOG – SYSTEM CHECK',
+                content: '<p>Bu yazı admin panelinden oluşturulan gerçek bir test yazısıdır.</p>',
+                metaDescription: 'Bu yazı admin panelinden oluşturulan gerçek bir test yazısıdır.',
                 destination: firstDest ? firstDest._id : undefined,
-                image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800'
+                image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800',
+                isDraft: false
             })
         });
         const createData = await createRes.json();
@@ -78,7 +86,7 @@ async function runBackendTests() {
         console.log('5. Fetching Blog Detail by ID...');
         const detailRes = await fetch(`${API_BASE}/blogs/${createdBlogId}`);
         const detailData = await detailRes.json();
-        if (detailData.title !== 'TEST REHBERİ: Antigravity Otomatik Test Rotaları') {
+        if (detailData.title !== 'TEST BLOG – SYSTEM CHECK') {
             throw new Error(`Title mismatch on blog detail! Found: ${detailData.title}`);
         }
         console.log('✅ Blog Detail verified!');
@@ -93,8 +101,8 @@ async function runBackendTests() {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                title: 'GÜNCELLENDİ: Antigravity Otomatik Test Rotaları',
-                content: '<p>Güncellenmiş test içeriği.</p>'
+                title: 'TEST BLOG – SYSTEM CHECK (UPDATED)',
+                content: '<p>Bu yazı admin panelinden güncellenen gerçek bir test yazısıdır.</p>'
             })
         });
         const updateData = await updateRes.json();
@@ -102,7 +110,7 @@ async function runBackendTests() {
 
         const checkUpdateRes = await fetch(`${API_BASE}/blogs/${createdBlogId}`);
         const checkUpdateData = await checkUpdateRes.json();
-        if (checkUpdateData.title !== 'GÜNCELLENDİ: Antigravity Otomatik Test Rotaları') {
+        if (checkUpdateData.title !== 'TEST BLOG – SYSTEM CHECK (UPDATED)') {
             throw new Error('Title update failed!');
         }
         console.log('✅ Blog Post Update verified!');
