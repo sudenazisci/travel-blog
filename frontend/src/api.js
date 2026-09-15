@@ -1,5 +1,6 @@
 // Merkezi API URL ayarı
-// Vercel'de VITE_API_URL env variable'ı, local'de localhost:5000 kullanılır
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Production ve Vercel ortamında varsayılan olarak relative ('') API kökü kullanılır.
+// VITE_API_URL verilmişse o kullanılır, aksi halde relative path ile Mixed Content ve localhost engeli önlenir.
+const API_BASE = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : '';
 
 export default API_BASE;
