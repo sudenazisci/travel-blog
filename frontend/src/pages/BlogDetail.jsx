@@ -176,12 +176,16 @@ const BlogDetail = () => {
                         )}
 
                         {/* Content & In-Article Sponsorship Banner */}
-                        <div className="max-w-[720px] mx-auto text-[#1A1918] leading-relaxed font-sans text-base sm:text-lg space-y-6 first-letter-dropcap prose prose-stone max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:text-[#1A1918] prose-a:text-[#A34828] prose-blockquote:font-serif prose-blockquote:italic prose-blockquote:border-l-2 prose-blockquote:border-[#A34828]">
-                            <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
+                        <div className="bg-[#FBF9F5] border border-[#1A1918]/12 rounded-sm p-6 sm:p-10 md:p-12 shadow-sm my-8 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#A34828] via-[#1A1918] to-[#A34828]"></div>
+                            
+                            <div className="max-w-[760px] mx-auto blog-content-editorial first-letter-dropcap">
+                                <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
 
-                            {/* In-Article Sponsorship Box Corner */}
-                            <div className="pt-6">
-                                <AdBanner location="in_post" />
+                                {/* In-Article Sponsorship Box Corner */}
+                                <div className="pt-8 mt-8 border-t border-[#1A1918]/10">
+                                    <AdBanner location="in_post" />
+                                </div>
                             </div>
                         </div>
 
