@@ -4,12 +4,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
-
-let cachedNavData = null;
+import { getCachedData, setCachedData, STORAGE_KEYS, DEFAULT_STATIC_REGIONS } from '../cache';
 
 const Navbar = () => {
-    const [siteTitle, setSiteTitle] = useState('Ceylan.m.e.');
-    const [destinations, setDestinations] = useState([]);
+    const cachedSettings = getCachedData(STORAGE_KEYS.SETTINGS);
+    const cachedDests = getCachedData(STORAGE_KEYS.DESTINATIONS);
+
+    const [siteTitle, setSiteTitle] = useState(cachedSettings?.siteTitle || 'Ceylan.m.e.');
+    const [destinations, setDestinations] = useState(cachedDests && cachedDests.length > 0 ? cachedDests : DEFAULT_STATIC_REGIONS);
     const [activeDestIds, setActiveDestIds] = useState(new Set());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [openRegionId, setOpenRegionId] = useState(null);
@@ -58,51 +60,44 @@ const Navbar = () => {
     useEffect(() => {
         let isMounted = true;
 
-        const fetchData = async () => {
-            try {
-                if (cachedNavData) {
-                    if (isMounted) {
-                        if (cachedNavData.siteTitle) setSiteTitle(cachedNavData.siteTitle);
-                        setDestinations(cachedNavData.destinations);
-                        setActiveDestIds(cachedNavData.activeDestIds);
+        const loadNavData = async () => {
+            // Independent, non-blocking requests for instant render
+            axios.get(`${API_BASE}/api/settings`)
+                .then(res => {
+                    if (isMounted && res.data?.siteTitle) {
+                        setSiteTitle(res.data.siteTitle);
+                        setCachedData(STORAGE_KEYS.SETTINGS, res.data);
                     }
-                    return;
-                }
+                })
+                .catch(() => {});
 
-                const [settingsRes, destRes, blogsRes] = await Promise.all([
-                    axios.get(`${API_BASE}/api/settings`),
-                    axios.get(`${API_BASE}/api/destinations`),
-                    axios.get(`${API_BASE}/api/blogs?limit=100&fields=destination,isDraft`)
-                ]);
+            axios.get(`${API_BASE}/api/destinations`)
+                .then(res => {
+                    if (isMounted && Array.isArray(res.data) && res.data.length > 0) {
+                        setDestinations(res.data);
+                        setCachedData(STORAGE_KEYS.DESTINATIONS, res.data);
+                    }
+                })
+                .catch(() => {});
 
-                const title = settingsRes.data?.siteTitle || 'Ceylan.m.e.';
-                const dests = destRes.data || [];
-                const activeBlogs = blogsRes.data?.blogs || blogsRes.data || [];
-                const blogDestIds = new Set(
-                    activeBlogs
-                        .filter(b => b && !b.isDraft)
-                        .map(b => (b.destination && typeof b.destination === 'object') ? b.destination._id : b.destination)
-                        .filter(Boolean)
-                        .map(id => String(id))
-                );
-
-                cachedNavData = {
-                    siteTitle: title,
-                    destinations: dests,
-                    activeDestIds: blogDestIds
-                };
-
-                if (isMounted) {
-                    setSiteTitle(title);
-                    setDestinations(dests);
-                    setActiveDestIds(blogDestIds);
-                }
-            } catch (err) { 
-                console.error('Navbar fetch error:', err); 
-            }
+            axios.get(`${API_BASE}/api/blogs?limit=100&fields=destination,isDraft`)
+                .then(res => {
+                    if (isMounted) {
+                        const activeBlogs = res.data?.blogs || res.data || [];
+                        const blogDestIds = new Set(
+                            activeBlogs
+                                .filter(b => b && !b.isDraft)
+                                .map(b => (b.destination && typeof b.destination === 'object') ? b.destination._id : b.destination)
+                                .filter(Boolean)
+                                .map(id => String(id))
+                        );
+                        setActiveDestIds(blogDestIds);
+                    }
+                })
+                .catch(() => {});
         };
-        fetchData();
 
+        loadNavData();
         return () => { isMounted = false; };
     }, []);
 
@@ -110,18 +105,19 @@ const Navbar = () => {
         if (!d || !d.parent) return false;
         const pId = typeof d.parent === 'object' ? d.parent._id : d.parent;
         const matchesParent = String(pId) === String(parentId);
-        // Only return sub-destinations that have at least 1 active published blog
         const hasActiveBlog = activeDestIds.has(String(d._id));
         return matchesParent && hasActiveBlog;
     });
+
     const dbRegions = destinations.filter(d => d && (d.isRegion || !d.parent));
 
     const regionMenuItems = orderedRegions.map(name => {
-        return dbRegions.find(d => d && d.name && (
+        const found = dbRegions.find(d => d && d.name && (
             d.name.trim().toUpperCase() === name.trim().toUpperCase() ||
             d.name.replace(/[Iİiı]/g, 'i').toLowerCase() === name.replace(/[Iİiı]/g, 'i').toLowerCase()
         ));
-    }).filter(Boolean);
+        return found || { _id: `static-${name}`, name: name, isRegion: true };
+    });
 
     dbRegions.forEach(d => {
         if (d && d._id && !regionMenuItems.some(r => r && r._id === d._id)) {

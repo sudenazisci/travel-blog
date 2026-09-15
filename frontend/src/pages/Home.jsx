@@ -8,6 +8,7 @@ import { Calendar, ArrowRight, Instagram, Youtube, Megaphone } from 'lucide-reac
 import SEO from '../components/SEO';
 import FeaturedBlogSlider from '../components/FeaturedBlogSlider';
 import WorldMap from '../components/WorldMap';
+import { getCachedData, setCachedData, STORAGE_KEYS } from '../cache';
 
 const DEFAULT_SETTINGS = {
     siteTitle: 'Ceylan.m.e.',
@@ -17,15 +18,18 @@ const DEFAULT_SETTINGS = {
 };
 
 const Home = () => {
-    const [blogs, setBlogs] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const initialBlogs = getCachedData(STORAGE_KEYS.BLOGS, []);
+    const initialSettings = getCachedData(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+
+    const [blogs, setBlogs] = useState(initialBlogs);
+    const [loading, setLoading] = useState(initialBlogs.length === 0);
     const [error, setError] = useState(null);
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
-        totalBlogs: 0
+        totalBlogs: initialBlogs.length
     });
-    const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+    const [settings, setSettings] = useState(initialSettings);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -53,7 +57,7 @@ const Home = () => {
         const limit = 12;
 
         const fetchBlogs = async () => {
-            setLoading(true);
+            if (blogs.length === 0) setLoading(true);
             setError(null);
             try {
                 let url = `${API_BASE}/api/blogs?page=${page}&limit=${limit}`;
@@ -62,6 +66,9 @@ const Home = () => {
                 const res = await axios.get(url);
                 if (res.data.blogs) {
                     setBlogs(res.data.blogs);
+                    if (!query && page === 1) {
+                        setCachedData(STORAGE_KEYS.BLOGS, res.data.blogs);
+                    }
                     setPagination({
                         currentPage: res.data.currentPage,
                         totalPages: res.data.totalPages,
@@ -70,6 +77,9 @@ const Home = () => {
                 } else {
                     const fetched = Array.isArray(res.data) ? res.data : [];
                     setBlogs(fetched);
+                    if (!query && page === 1) {
+                        setCachedData(STORAGE_KEYS.BLOGS, fetched);
+                    }
                     setPagination({
                         currentPage: 1,
                         totalPages: 1,
@@ -78,7 +88,9 @@ const Home = () => {
                 }
             } catch (err) {
                 console.error('Fetch blogs error:', err);
-                setError('Blog yazıları yüklenirken bir hata oluştu.');
+                if (blogs.length === 0) {
+                    setError('Blog yazıları yüklenirken bir hata oluştu.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -90,7 +102,10 @@ const Home = () => {
         const fetchSettings = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/api/settings`);
-                setSettings(res.data);
+                if (res.data) {
+                    setSettings(res.data);
+                    setCachedData(STORAGE_KEYS.SETTINGS, res.data);
+                }
             } catch (error) { console.error(error); }
         };
         fetchSettings();
