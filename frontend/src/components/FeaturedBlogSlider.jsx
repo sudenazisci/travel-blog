@@ -24,7 +24,27 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
         return () => clearInterval(timer);
     }, [items.length, isHovered]);
 
-    if (!items || items.length === 0) return null;
+    if (!items || items.length === 0) {
+        return (
+            <section className="w-full mb-10 select-none">
+                <div className="flex items-center justify-between pb-2 mb-4 border-b border-[#1A1918]/15">
+                    <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#A34828]">
+                        ÖNE ÇIKAN SEYAHAT ROTALARI
+                    </span>
+                    <span className="font-sans text-[11px] font-bold text-[#78746D]">
+                        01 / 01
+                    </span>
+                </div>
+                <div className="relative w-full h-[360px] sm:h-[400px] lg:h-[440px] overflow-hidden bg-[#1A1918] animate-pulse flex flex-col justify-end p-6 sm:p-10">
+                    <div className="space-y-3 max-w-2xl">
+                        <div className="h-4 bg-[#2A2928] w-24 rounded"></div>
+                        <div className="h-8 bg-[#2A2928] w-3/4 rounded"></div>
+                        <div className="h-4 bg-[#2A2928] w-1/2 rounded"></div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     const currentSlide = items[currentIndex] || items[0];
 
@@ -95,13 +115,13 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
             {/* Compact Slider Container */}
             <div className="relative w-full h-[360px] sm:h-[400px] lg:h-[440px] overflow-hidden bg-[#1A1918] group">
                 
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                         key={currentSlide._id || currentIndex}
-                        initial={{ opacity: 0 }}
+                        initial={{ opacity: 1 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+                        transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
                         className="absolute inset-0 z-10"
                     >
                         <div 
@@ -111,18 +131,20 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
                                 backgroundPosition: `center ${currentSlide.imagePosition || '50%'}`
                             }}
                         >
+                            <img
+                                src={getImageUrl(currentSlide.image)}
+                                alt=""
+                                loading="eager"
+                                fetchpriority="high"
+                                className="hidden"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#1A1918] via-[#1A1918]/50 to-transparent"></div>
                         </div>
 
                         {/* Content Overlay */}
                         <div className="relative z-20 h-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 flex flex-col justify-end text-white">
                             
-                            <motion.div 
-                                initial={{ y: 15, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 0.4, delay: 0.1 }}
-                                className="space-y-2.5 max-w-2xl"
-                            >
+                            <div className="space-y-2.5 max-w-2xl">
                                 {/* Tag */}
                                 {(currentSlide.destination || currentSlide.category) && (
                                     <span className="font-sans text-[10px] font-bold text-[#A34828] bg-[#FBF9F5] px-2.5 py-0.5 uppercase tracking-[0.2em] inline-block">
@@ -153,7 +175,7 @@ const FeaturedBlogSlider = ({ blogs = [], featuredBlogs = [] }) => {
                                     </Link>
                                 </div>
 
-                            </motion.div>
+                            </div>
 
                         </div>
 

@@ -72,21 +72,27 @@ const CustomZoomControls = () => {
     );
 };
 
+let cachedDestinations = null;
+
 const WorldMap = ({ settings }) => {
     const navigate = useNavigate();
-    const [destinations, setDestinations] = useState([]);
+    const [destinations, setDestinations] = useState(cachedDestinations || []);
     const [panTarget, setPanTarget] = useState(null);
 
     useEffect(() => {
+        let isMounted = true;
         const fetchDestinations = async () => {
+            if (cachedDestinations && cachedDestinations.length > 0) return;
             try {
                 const res = await axios.get(`${API_BASE}/api/destinations`);
-                setDestinations(res.data);
+                cachedDestinations = res.data;
+                if (isMounted) setDestinations(res.data);
             } catch (err) {
                 console.error('Error fetching destinations:', err);
             }
         };
         fetchDestinations();
+        return () => { isMounted = false; };
     }, []);
 
     return (

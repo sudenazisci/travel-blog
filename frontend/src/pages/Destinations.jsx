@@ -34,7 +34,7 @@ const Destinations = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/api/blogs?limit=100`);
+                const res = await axios.get(`${API_BASE}/api/blogs?limit=100&fields=title,image,destination,createdAt,metaDescription,content,isDraft`);
                 const fetched = res.data.blogs || res.data || [];
                 setBlogs(Array.isArray(fetched) ? fetched : []);
             } catch (error) {
@@ -62,14 +62,6 @@ const Destinations = () => {
         return normTitle.includes(normalizedQuery) || normDest.includes(normalizedQuery) || normContent.includes(normalizedQuery);
     });
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-[#FBF9F5] text-[#1A1918] flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#A34828]">
-                Rotalar Yükleniyor...
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen bg-[#FBF9F5] text-[#1A1918] flex flex-col justify-between selection:bg-[#A34828]/15 selection:text-[#1A1918]">
             <SEO 
@@ -93,7 +85,7 @@ const Destinations = () => {
                     </div>
 
                     <div className="font-sans text-xs text-[#78746D]">
-                        {filteredBlogs.length} Rota Kayıtlı
+                        {loading ? 'Yükleniyor...' : `${filteredBlogs.length} Rota Kayıtlı`}
                     </div>
                 </div>
 
@@ -126,7 +118,16 @@ const Destinations = () => {
 
                 {/* Single Unified Routes & Blog Posts Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredBlogs.map((blog) => {
+                    {loading ? (
+                        [1, 2, 3, 4, 5, 6].map(n => (
+                            <div key={n} className="border border-[#1A1918]/15 bg-[#F4F0E8] p-5 space-y-4 animate-pulse">
+                                <div className="aspect-[4/3] bg-[#EAE6DF] w-full"></div>
+                                <div className="h-4 bg-[#EAE6DF] w-1/3 rounded"></div>
+                                <div className="h-6 bg-[#EAE6DF] w-3/4 rounded"></div>
+                                <div className="h-4 bg-[#EAE6DF] w-full rounded"></div>
+                            </div>
+                        ))
+                    ) : filteredBlogs.map((blog, idx) => {
                         const imageUrl = blog.image 
                             ? (blog.image.startsWith('http') ? blog.image : `${API_BASE}${blog.image.startsWith('/') ? '' : '/'}${blog.image}`)
                             : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800';
@@ -142,7 +143,9 @@ const Destinations = () => {
                                 <div className="aspect-[4/3] bg-[#1A1918] overflow-hidden relative">
                                     <img 
                                         src={imageUrl} 
-                                        alt={blog.title} 
+                                        alt={blog.title}
+                                        loading={idx < 6 ? "eager" : "lazy"}
+                                        fetchpriority={idx < 6 ? "high" : "auto"}
                                         className="w-full h-full object-cover img-editorial-zoom"
                                         onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800'; }}
                                     />

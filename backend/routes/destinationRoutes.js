@@ -13,6 +13,17 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET By ID
+router.get('/:id', async (req, res) => {
+    try {
+        const destination = await Destination.findById(req.params.id);
+        if (!destination) return res.status(404).json({ message: 'Destination not found' });
+        res.json(destination);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // POST New
 router.post('/', auth, async (req, res) => {
     const destination = new Destination({

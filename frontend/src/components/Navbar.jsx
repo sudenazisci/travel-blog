@@ -5,6 +5,8 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
+let cachedNavData = null;
+
 const Navbar = () => {
     const [siteTitle, setSiteTitle] = useState('Ceylan.m.e.');
     const [destinations, setDestinations] = useState([]);
@@ -54,18 +56,28 @@ const Navbar = () => {
     const orderedRegions = ['TÜRKİYE', 'AFRİKA', 'ASYA', 'AVRUPA', 'GÜNEY AMERİKA', 'KUZEY AMERİKA'];
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchData = async () => {
             try {
+                if (cachedNavData) {
+                    if (isMounted) {
+                        if (cachedNavData.siteTitle) setSiteTitle(cachedNavData.siteTitle);
+                        setDestinations(cachedNavData.destinations);
+                        setActiveDestIds(cachedNavData.activeDestIds);
+                    }
+                    return;
+                }
+
                 const [settingsRes, destRes, blogsRes] = await Promise.all([
                     axios.get(`${API_BASE}/api/settings`),
                     axios.get(`${API_BASE}/api/destinations`),
-                    axios.get(`${API_BASE}/api/blogs?limit=100`)
+                    axios.get(`${API_BASE}/api/blogs?limit=100&fields=destination,isDraft`)
                 ]);
 
-                if (settingsRes.data.siteTitle) setSiteTitle(settingsRes.data.siteTitle);
-                setDestinations(destRes.data);
-
-                const activeBlogs = blogsRes.data.blogs || blogsRes.data || [];
+                const title = settingsRes.data?.siteTitle || 'Ceylan.m.e.';
+                const dests = destRes.data || [];
+                const activeBlogs = blogsRes.data?.blogs || blogsRes.data || [];
                 const blogDestIds = new Set(
                     activeBlogs
                         .filter(b => b && !b.isDraft)
@@ -73,12 +85,25 @@ const Navbar = () => {
                         .filter(Boolean)
                         .map(id => String(id))
                 );
-                setActiveDestIds(blogDestIds);
+
+                cachedNavData = {
+                    siteTitle: title,
+                    destinations: dests,
+                    activeDestIds: blogDestIds
+                };
+
+                if (isMounted) {
+                    setSiteTitle(title);
+                    setDestinations(dests);
+                    setActiveDestIds(blogDestIds);
+                }
             } catch (err) { 
                 console.error('Navbar fetch error:', err); 
             }
         };
         fetchData();
+
+        return () => { isMounted = false; };
     }, []);
 
     const getChildren = (parentId) => destinations.filter(d => {

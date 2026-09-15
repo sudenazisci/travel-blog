@@ -25,6 +25,8 @@ router.get('/', async (req, res) => {
             ];
         }
 
+        const selectFields = req.query.fields ? req.query.fields.split(',').join(' ') : null;
+
         // Pagination Logic
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
@@ -33,11 +35,13 @@ router.get('/', async (req, res) => {
             const startIndex = (page - 1) * limit;
 
             const total = await Blog.countDocuments(query);
-            const blogs = await Blog.find(query)
+            let mongoQuery = Blog.find(query)
                 .sort({ createdAt: -1 })
                 .limit(limit)
-                .skip(startIndex)
-                .populate('destination');
+                .skip(startIndex);
+
+            if (selectFields) mongoQuery = mongoQuery.select(selectFields);
+            const blogs = await mongoQuery.populate('destination');
 
             res.json({
                 blogs,
@@ -47,7 +51,9 @@ router.get('/', async (req, res) => {
             });
         } else {
             // Backward compatibility: return all blogs if no pagination params
-            const blogs = await Blog.find(query).sort({ createdAt: -1 }).populate('destination');
+            let mongoQuery = Blog.find(query).sort({ createdAt: -1 });
+            if (selectFields) mongoQuery = mongoQuery.select(selectFields);
+            const blogs = await mongoQuery.populate('destination');
             res.json(blogs);
         }
     } catch (err) {

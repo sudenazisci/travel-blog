@@ -7,8 +7,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, ArrowRight, Instagram, Youtube, Megaphone } from 'lucide-react';
 import SEO from '../components/SEO';
 import FeaturedBlogSlider from '../components/FeaturedBlogSlider';
-
-const WorldMap = React.lazy(() => import('../components/WorldMap'));
+import WorldMap from '../components/WorldMap';
 
 const DEFAULT_SETTINGS = {
     siteTitle: 'Ceylan.m.e.',
@@ -195,7 +194,8 @@ const Home = () => {
                                                 <img
                                                     src={blog.image ? (blog.image.startsWith('http') ? blog.image : `${API_BASE}${blog.image.startsWith('/') ? '' : '/'}${blog.image}`) : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&auto=format&fit=crop&q=80'}
                                                     alt={blog.title}
-                                                    loading="lazy"
+                                                    loading={index < 4 ? "eager" : "lazy"}
+                                                    fetchpriority={index < 4 ? "high" : "auto"}
                                                     decoding="async"
                                                     className="w-full h-full object-cover img-editorial-zoom"
                                                     style={{ objectPosition: `center ${blog.imagePosition || '50%'}` }}
@@ -416,9 +416,7 @@ const Home = () => {
                 </div>
 
                 <div className="relative border border-[#1A1918]/15 bg-[#F4F0E8] overflow-hidden h-[280px] sm:h-[320px]">
-                    <React.Suspense fallback={<div className="h-full flex items-center justify-center font-sans text-xs font-bold uppercase text-[#A34828]">Harita Yükleniyor...</div>}>
-                        <WorldMap settings={settings} />
-                    </React.Suspense>
+                    <WorldMap settings={settings} />
                 </div>
             </div>
 
