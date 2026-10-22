@@ -346,3 +346,63 @@
   max-width: 100%;
   height: auto;
 }
+
+/* Blog detay sayfasında tutarlı Times New Roman tipografisi */
+article,
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6,
+article p,
+article span,
+article a,
+article button,
+article time,
+article li,
+article blockquote,
+article figcaption,
+article strong,
+article em,
+article div {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Blog gövdesi */
+.blog-content-body {
+  font-family: "Times New Roman", Times, serif !important;
+  font-size: 18px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* İçerideki tüm metin öğeleri */
+.blog-content-body * {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Blog içindeki görseller */
+.blog-content-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 32px auto;
+  object-fit: contain;
+}
+
+/* Görsel alt yazısı */
+.blog-content-body figcaption {
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Türkçe karakterlerin ve metnin doğal görünmesi */
+article {
+  font-kerning: normal;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
