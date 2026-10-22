@@ -15,6 +15,8 @@ const loginLimiter = rateLimit({
 });
 
 const crypto = require('crypto');
+const { envTrim } = require('../utils/env');
+const { ensureAdminUser } = require('../services/adminBootstrap');
 
 const safeEqual = (a, b) => {
     const ba = Buffer.from(String(a));
@@ -41,19 +43,23 @@ router.post('/login', loginLimiter, async (req, res) => {
     }
 
     // Güvenlik PIN'i environment variable olarak ZORUNLU (varsayılan değer yok)
-    const serverPin = process.env.ADMIN_SECURITY_PIN;
+    const serverPin = envTrim('ADMIN_SECURITY_PIN');
     if (!serverPin || !auth.getSecret()) {
         console.error('ADMIN_SECURITY_PIN veya JWT_SECRET tanımlı değil.');
         return res.status(500).json({ msg: 'Sunucu yapılandırma hatası' });
     }
-    if (!safeEqual(securityPin, serverPin)) {
+    if (!safeEqual(securityPin.trim(), serverPin)) {
         return res.status(400).json({ msg: 'Geçersiz Güvenlik PIN Kodu' });
     }
 
     try {
-        let user = await User.findOne({ email: email.toLowerCase().trim() });
+        // Admin kullanıcısını Render ortam değişkenleriyle eşitle.
+        await ensureAdminUser();
 
-        // Kullanıcı yoksa da bcrypt çalıştır (zamanlama farkından kullanıcı tespitini önler)
+        const normalizedEmail = email.trim().toLowerCase();
+        const user = await User.findOne({ email: normalizedEmail });
+
+        // Kullanıcı yoksa da bcrypt çalıştır
         const hash = user ? user.password : '$2a$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidinva';
         const isMatch = await bcrypt.compare(password, hash);
 
