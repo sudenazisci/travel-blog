@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
+import { SiTiktok, SiThreads } from '@icons-pack/react-simple-icons';
 
 const Footer = () => {
     const handleOpenCookieSettings = (e) => {
@@ -11,10 +12,10 @@ const Footer = () => {
     return (
         <footer className="bg-[#F4F0E8] text-[#1A1918] border-t border-[#1A1918]/15 pt-8 pb-6 select-none">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
+
                 {/* Broadside Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 pb-8 border-b border-[#1A1918]/15">
-                    
+
                     {/* Brand Column */}
                     <div className="lg:col-span-4 space-y-3">
                         <Link to="/" className="inline-block font-serif text-2xl font-bold text-[#1A1918] tracking-tight hover:text-[#A34828] transition-colors">
@@ -22,9 +23,9 @@ const Footer = () => {
                         </Link>
 
                         <div className="flex items-center gap-3 pt-1">
-                            <a 
-                                href="https://www.instagram.com/ceylan.m.e/" 
-                                target="_blank" 
+                            <a
+                                href="https://www.instagram.com/ceylan.m.e/"
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1918] hover:text-[#A34828] transition-colors flex items-center gap-1"
                                 aria-label="Instagram"
@@ -33,9 +34,9 @@ const Footer = () => {
                                 <span>INSTAGRAM</span>
                             </a>
                             <span className="text-[#1A1918]/20">•</span>
-                            <a 
-                                href="https://www.youtube.com/@Ceylan.m.e" 
-                                target="_blank" 
+                            <a
+                                href="https://www.youtube.com/@Ceylan.m.e"
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1918] hover:text-[#A34828] transition-colors flex items-center gap-1"
                                 aria-label="YouTube"
@@ -43,6 +44,31 @@ const Footer = () => {
                                 <Youtube size={13} />
                                 <span>YOUTUBE</span>
                             </a>
+
+                            <a
+                                href="https://www.tiktok.com/@ceylan.m.e"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1918] hover:text-[#A34828] transition-colors flex items-center gap-1"
+                                aria-label="TikTok"
+                            >
+                                <SiTiktok size={13} />
+                                <span>TIKTOK</span>
+                            </a>
+
+                            <span className="text-[#1A1918]/20">•</span>
+
+                            <a
+                                href="https://www.threads.net/@ceylan.m.e"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1918] hover:text-[#A34828] transition-colors flex items-center gap-1"
+                                aria-label="Threads"
+                            >
+                                <SiThreads size={13} />
+                                <span>THREADS</span>
+                            </a>
+
                         </div>
                     </div>
 

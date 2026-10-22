@@ -16,7 +16,7 @@ const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [openRegionId, setOpenRegionId] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
-    
+
     const location = useLocation();
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
@@ -69,7 +69,7 @@ const Navbar = () => {
                         setCachedData(STORAGE_KEYS.SETTINGS, res.data);
                     }
                 })
-                .catch(() => {});
+                .catch(() => { });
 
             axios.get(`${API_BASE}/api/destinations`)
                 .then(res => {
@@ -78,7 +78,7 @@ const Navbar = () => {
                         setCachedData(STORAGE_KEYS.DESTINATIONS, res.data);
                     }
                 })
-                .catch(() => {});
+                .catch(() => { });
 
             axios.get(`${API_BASE}/api/blogs?limit=100&fields=destination,isDraft`)
                 .then(res => {
@@ -94,7 +94,7 @@ const Navbar = () => {
                         setActiveDestIds(blogDestIds);
                     }
                 })
-                .catch(() => {});
+                .catch(() => { });
         };
 
         loadNavData();
@@ -129,19 +129,18 @@ const Navbar = () => {
 
     return (
         <>
-            <header className={`sticky top-0 z-50 transition-all duration-300 ${
-                isScrolled 
-                    ? 'bg-white/95 backdrop-blur-md border-b border-[#1A1918]/15 py-2 shadow-xs' 
+            <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
+                    ? 'bg-white/95 backdrop-blur-md border-b border-[#1A1918]/15 py-2 shadow-xs'
                     : 'bg-white border-b border-[#1A1918]/15 py-3'
-            }`}>
+                }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12" ref={dropdownRef}>
-                    
+
                     {/* Left: Clean Logo Image (Without double text) */}
                     <Link to="/" className="flex items-center shrink-0 group min-h-[44px]">
-                        <img 
-                            src="/logo.png" 
-                            alt={siteTitle} 
-                            className="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
+                        <img
+                            src="/logo.png"
+                            alt={siteTitle}
+                            className="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                         />
                     </Link>
 
@@ -167,58 +166,56 @@ const Navbar = () => {
                                             else setOpenRegionId(region._id);
                                             navigate(`/destination/${region._id}`);
                                         }}
-                                        className={`font-sans text-[11px] font-bold uppercase tracking-wider transition-colors py-1 flex items-center gap-1 cursor-pointer ${
-                                            isRegionActive 
-                                                ? 'text-[#A34828] border-b-2 border-[#A34828]' 
+                                        className={`font-sans text-[11px] font-bold uppercase tracking-wider transition-colors py-1 flex items-center gap-1 cursor-pointer ${isRegionActive
+                                                ? 'text-[#A34828] border-b-2 border-[#A34828]'
                                                 : 'text-[#1A1918] hover:text-[#A34828]'
-                                        }`}
+                                            }`}
                                     >
                                         <span>{region.name}</span>
                                         {hasChildren && <ChevronDown size={11} className={`transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#A34828]' : ''}`} />}
                                     </button>
 
-                                     {/* City Panel Dropdown */}
-                                     <AnimatePresence>
-                                         {(isOpen && hasChildren) && (
-                                             <motion.div 
-                                                 initial={{ opacity: 0, y: 5 }}
-                                                 animate={{ opacity: 1, y: 0 }}
-                                                 exit={{ opacity: 0, y: 5 }}
-                                                 transition={{ duration: 0.15 }}
-                                                 className="absolute top-full left-0 min-w-[200px] bg-white border border-[#1A1918]/15 shadow-xl z-50 p-2 space-y-1"
-                                             >
-                                                 <div className="font-sans text-[9px] font-bold text-[#A34828] uppercase tracking-widest px-2.5 py-1 border-b border-[#1A1918]/10 mb-1">
-                                                     {region.name} ŞEHİRLERİ
-                                                 </div>
-                                                 {children.map(child => (
-                                                     <Link
-                                                         key={child._id}
-                                                         to={`/destination/${child._id}`}
-                                                         onClick={() => setOpenRegionId(null)}
-                                                         className="block px-2.5 py-1.5 font-sans text-[11px] font-semibold text-[#1A1918] hover:text-[#A34828] hover:bg-[#F4F0E8] transition-colors uppercase tracking-wider"
-                                                     >
-                                                         {child.name}
-                                                     </Link>
-                                                 ))}
-                                                 <Link
-                                                     to={`/destination/${region._id}`}
-                                                     onClick={() => setOpenRegionId(null)}
-                                                     className="block px-2.5 py-1.5 font-sans text-[10px] font-bold text-[#A34828] hover:bg-[#F4F0E8] transition-colors uppercase tracking-wider border-t border-[#1A1918]/10 mt-1"
-                                                 >
-                                                     Tüm {region.name} Rehberleri →
-                                                 </Link>
-                                             </motion.div>
-                                         )}
-                                     </AnimatePresence>
-                                 </div>
-                             );
-                         })}
+                                    {/* City Panel Dropdown */}
+                                    <AnimatePresence>
+                                        {(isOpen && hasChildren) && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 5 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 5 }}
+                                                transition={{ duration: 0.15 }}
+                                                className="absolute top-full left-0 min-w-[200px] bg-white border border-[#1A1918]/15 shadow-xl z-50 p-2 space-y-1"
+                                            >
+                                                <div className="font-sans text-[9px] font-bold text-[#A34828] uppercase tracking-widest px-2.5 py-1 border-b border-[#1A1918]/10 mb-1">
+                                                    {region.name} ŞEHİRLERİ
+                                                </div>
+                                                {children.map(child => (
+                                                    <Link
+                                                        key={child._id}
+                                                        to={`/destination/${child._id}`}
+                                                        onClick={() => setOpenRegionId(null)}
+                                                        className="block px-2.5 py-1.5 font-sans text-[11px] font-semibold text-[#1A1918] hover:text-[#A34828] hover:bg-[#F4F0E8] transition-colors uppercase tracking-wider"
+                                                    >
+                                                        {child.name}
+                                                    </Link>
+                                                ))}
+                                                <Link
+                                                    to={`/destination/${region._id}`}
+                                                    onClick={() => setOpenRegionId(null)}
+                                                    className="block px-2.5 py-1.5 font-sans text-[10px] font-bold text-[#A34828] hover:bg-[#F4F0E8] transition-colors uppercase tracking-wider border-t border-[#1A1918]/10 mt-1"
+                                                >
+                                                    Tüm {region.name} Rehberleri →
+                                                </Link>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            );
+                        })}
 
-                        <Link 
-                            to="/destinations" 
-                            className={`font-sans text-[11px] font-bold uppercase tracking-wider transition-colors py-1 ${
-                                isActive('/destinations') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
-                            }`}
+                        <Link
+                            to="/destinations"
+                            className={`font-sans text-[11px] font-bold uppercase tracking-wider transition-colors py-1 ${isActive('/destinations') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
+                                }`}
                         >
                             TÜM ROTALAR
                         </Link>
@@ -226,27 +223,24 @@ const Navbar = () => {
 
                     {/* Right Info Links: Ana Sayfa + Hakkımda + İletişim */}
                     <div className="hidden lg:flex items-center space-x-4 shrink-0 font-sans text-[11px] font-bold uppercase tracking-wider">
-                        <Link 
-                            to="/" 
-                            className={`transition-colors py-1 ${
-                                isActive('/') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
-                            }`}
+                        <Link
+                            to="/"
+                            className={`transition-colors py-1 ${isActive('/') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
+                                }`}
                         >
                             ANA SAYFA
                         </Link>
-                        <Link 
-                            to="/about" 
-                            className={`transition-colors py-1 ${
-                                isActive('/about') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
-                            }`}
+                        <Link
+                            to="/about"
+                            className={`transition-colors py-1 ${isActive('/about') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
+                                }`}
                         >
                             HAKKIMDA
                         </Link>
-                        <Link 
-                            to="/contact" 
-                            className={`transition-colors py-1 ${
-                                isActive('/contact') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
-                            }`}
+                        <Link
+                            to="/contact"
+                            className={`transition-colors py-1 ${isActive('/contact') ? 'text-[#A34828] border-b-2 border-[#A34828]' : 'text-[#1A1918] hover:text-[#A34828]'
+                                }`}
                         >
                             İLETİŞİM
                         </Link>
@@ -278,7 +272,7 @@ const Navbar = () => {
                             <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
                                 <img src="/logo.png" alt="Ceylan.m.e." className="h-8 w-auto object-contain" />
                             </Link>
-                            <button 
+                            <button
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="w-9 h-9 flex items-center justify-center text-[#1A1918] border border-[#1A1918]/20"
                                 aria-label="Menüyü Kapat"
@@ -287,7 +281,7 @@ const Navbar = () => {
                             </button>
                         </div>
 
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
@@ -334,29 +328,29 @@ const Navbar = () => {
                                 <span className="font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-[0.2em] block mb-2">
                                     MENÜ
                                 </span>
-                                <Link 
-                                    to="/" 
+                                <Link
+                                    to="/"
                                     className="block font-sans text-xs font-bold text-[#1A1A18] uppercase tracking-wider hover:text-[#A34828] transition-colors py-1.5 min-h-[40px] flex items-center"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     ANA SAYFA
                                 </Link>
-                                <Link 
-                                    to="/destinations" 
+                                <Link
+                                    to="/destinations"
                                     className="block font-sans text-xs font-bold text-[#1A1918] uppercase tracking-wider hover:text-[#A34828] transition-colors py-1.5 min-h-[40px] flex items-center"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     TÜM ROTALAR
                                 </Link>
-                                <Link 
-                                    to="/about" 
+                                <Link
+                                    to="/about"
                                     className="block font-sans text-xs font-bold text-[#1A1918] uppercase tracking-wider hover:text-[#A34828] transition-colors py-1.5 min-h-[40px] flex items-center"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     HAKKIMDA
                                 </Link>
-                                <Link 
-                                    to="/contact" 
+                                <Link
+                                    to="/contact"
                                     className="block font-sans text-xs font-bold text-[#1A1918] uppercase tracking-wider hover:text-[#A34828] transition-colors py-1.5 min-h-[40px] flex items-center"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
