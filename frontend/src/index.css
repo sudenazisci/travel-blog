@@ -316,3 +316,33 @@
 .blog-content-body p {
   overflow-wrap: anywhere;
 }
+
+/* Blog içeriklerinin tamamında Times New Roman */
+.blog-content-body,
+.blog-content-body p,
+.blog-content-body h1,
+.blog-content-body h2,
+.blog-content-body h3,
+.blog-content-body h4,
+.blog-content-body h5,
+.blog-content-body h6,
+.blog-content-body span,
+.blog-content-body div,
+.blog-content-body li,
+.blog-content-body blockquote,
+.blog-content-body a,
+.blog-content-body strong,
+.blog-content-body em {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Blog metninin okunabilirliği */
+.blog-content-body {
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+.blog-content-body img {
+  max-width: 100%;
+  height: auto;
+}
