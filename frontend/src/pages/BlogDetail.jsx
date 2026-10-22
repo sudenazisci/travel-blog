@@ -21,7 +21,7 @@ const BlogDetail = () => {
                 const res = await axios.get(`${API_BASE}/api/blogs/${id}`);
                 setBlog(res.data);
 
-                if (!viewIncremented.current) {
+                if (!viewIncremented.current && !res.data.isDraft && !localStorage.getItem('token') && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
                     viewIncremented.current = true;
                     await axios.post(`${API_BASE}/api/blogs/${id}/view`).catch(() => {});
                 }

@@ -14,8 +14,13 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/travelblog'
 
 const seedAdmin = async () => {
     try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash('admin123', salt);
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        if (!adminPassword || adminPassword.length < 12) {
+            console.error('ADMIN_PASSWORD env değişkenini (en az 12 karakter) ayarlayın. Örn: $env:ADMIN_PASSWORD="..." ; node seedAdmin.js');
+            process.exit(1);
+        }
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(adminPassword, salt);
 
         // Check if admin exists
         let admin = await User.findOne({ email: 'ceylan.me@outlook.com' });
@@ -27,7 +32,7 @@ const seedAdmin = async () => {
             admin.email = 'ceylan.me@outlook.com';
             admin.password = hashedPassword;
             await admin.save();
-            console.log('Admin user updated: ceylan.me@outlook.com / admin123');
+            console.log('Admin user updated: ceylan.me@outlook.com');
             process.exit();
         }
 
@@ -38,7 +43,7 @@ const seedAdmin = async () => {
         });
 
         await admin.save();
-        console.log('Admin created: ceylan.me@outlook.com / admin123');
+        console.log('Admin created: ceylan.me@outlook.com');
         process.exit();
     } catch (error) {
         console.error(error);

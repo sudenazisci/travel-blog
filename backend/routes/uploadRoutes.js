@@ -77,7 +77,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
 // @route   GET /api/upload/files
 // @desc    List all uploaded images
 // @access  Public / Admin
-router.get('/files', (req, res) => {
+router.get('/files', auth, (req, res) => {
     const directoryPath = path.join(__dirname, '../uploads');
 
     if (!fs.existsSync(directoryPath)) {

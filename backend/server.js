@@ -20,24 +20,28 @@ app.use(cors({
     credentials: true
 }));
 
-// Body parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Vercel/Render proxy arkasında gerçek IP'yi al (rate limit için gerekli)
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+// Body parser (boyut sınırlı)
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // Security Middleware
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// Global Rate Limiting - DISABLED FOR DEVELOPMENT
-/*
+// Global Rate Limiting
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 dakika
-    max: 1000, 
-    message: { error: 'Çok fazla istek gönderildi, lütfen 15 dakika sonra tekrar deneyin.' }
+    windowMs: 15 * 60 * 1000,
+    max: 1500,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Çok fazla istek gönderildi, lütfen biraz sonra tekrar deneyin.' }
 });
 app.use('/api', apiLimiter);
-*/
 
 // Custom Security Middlewares (Compatible with Express 5)
 app.use(noSqlInjectionPrevent);
@@ -49,10 +53,39 @@ app.use((req, res, next) => {
     next();
 });
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/travelblog')
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.error('MongoDB Connection Error:', err));
+// Public GET istekleri CDN'de kısa süre önbelleklenir (hızlı açılış).
+// Admin token'lı, taslak içeren, auth ve stats istekleri ASLA önbelleğe alınmaz.
+app.use('/api', (req, res, next) => {
+    const url = req.originalUrl;
+    const sensitive = req.headers['x-auth-token'] || req.headers.authorization ||
+        url.includes('includeDrafts') || url.startsWith('/api/auth') ||
+        url.startsWith('/api/stats') || url.startsWith('/api/upload');
+    if (req.method === 'GET' && !sensitive) {
+        res.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=300');
+    } else {
+        res.set('Cache-Control', 'no-store');
+    }
+    res.set('Vary', 'x-auth-token');
+    next();
+});
+
+// Database Connection (serverless için bağlantı önbelleği)
+let dbPromise = null;
+const connectDB = () => {
+    if (mongoose.connection.readyState === 1) return Promise.resolve();
+    if (!dbPromise) {
+        dbPromise = mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/travelblog', {
+            serverSelectionTimeoutMS: 8000,
+            maxPoolSize: 5
+        })
+            .then(() => console.log('MongoDB Connected'))
+            .catch(err => { dbPromise = null; console.error('MongoDB Connection Error:', err); });
+    }
+    return dbPromise;
+};
+connectDB();
+// Her istek DB hazır olana kadar bekler (buffer timeout hatalarını önler)
+app.use(async (req, res, next) => { await connectDB(); next(); });
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -65,6 +98,7 @@ const sitemapRoutes = require('./routes/sitemapRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 // const regionRoutes = require('./routes/regionRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const statsRoutes = require('./routes/statsRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
@@ -75,6 +109,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
 // app.use('/api/regions', regionRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/stats', statsRoutes);
 app.use('/', sitemapRoutes);
 
 // Global Error Handler
@@ -92,8 +127,12 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    // Start Cron Jobs
-    require('./services/cronService')();
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        // Start Cron Jobs
+        require('./services/cronService')();
+    });
+}
+
+module.exports = app;

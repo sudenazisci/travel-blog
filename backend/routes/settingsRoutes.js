@@ -37,9 +37,11 @@ router.put('/', auth, async (req, res) => {
             settings = new SiteSettings();
         }
 
-        // Update all fields dynamically from req.body
+        // Update fields from req.body (korunan alanlar hariç)
+        const PROTECTED = ['_id', '__v', 'totalVisitors', 'overall'];
         Object.keys(req.body).forEach(key => {
-            if (req.body[key] !== undefined) {
+            if (PROTECTED.includes(key) || key.startsWith('$')) return;
+            if (req.body[key] !== undefined && SiteSettings.schema.path(key)) {
                 settings[key] = req.body[key];
             }
         });
@@ -51,22 +53,10 @@ router.put('/', auth, async (req, res) => {
     }
 });
 
-// INCREASE Total Visitors
-router.post('/visit', async (req, res) => {
-    try {
-        let settings = await SiteSettings.findOne();
-        if (!settings) {
-            settings = new SiteSettings();
-        }
-
-        settings.totalVisitors = (settings.totalVisitors || 0) + 1;
-        await settings.save();
-
-        res.json({ totalVisitors: settings.totalVisitors });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-    }
+// ESKİ SAYAÇ: Artık yazma yapmaz. Gerçek ziyaretçi takibi /api/stats/track ile yapılır.
+// (Eski sürüm istemcileri hata almasın diye uç korundu.)
+router.post('/visit', (req, res) => {
+    res.json({ ok: true });
 });
 
 module.exports = router;

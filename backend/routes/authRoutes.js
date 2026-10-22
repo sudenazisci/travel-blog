@@ -14,39 +14,62 @@ const loginLimiter = rateLimit({
     message: { msg: 'Çok fazla hatalı giriş denemesi. Lütfen 15 dakika sonra tekrar deneyin.' }
 });
 
+const crypto = require('crypto');
+
+const safeEqual = (a, b) => {
+    const ba = Buffer.from(String(a));
+    const bb = Buffer.from(String(b));
+    return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+};
+
+const otpLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { msg: 'Çok fazla doğrulama denemesi. Lütfen 15 dakika sonra tekrar deneyin.' }
+});
+
+const MAX_OTP_ATTEMPTS = 5;
+
 // @route   POST api/auth/login
 // @desc    Authenticate user & send Telegram OTP
 // @access  Public
 router.post('/login', loginLimiter, async (req, res) => {
     const { email, password, securityPin } = req.body;
 
-    // Check Security PIN
-    const serverPin = process.env.ADMIN_SECURITY_PIN || '123456';
-    if (securityPin !== serverPin) {
+    if (typeof email !== 'string' || typeof password !== 'string' || typeof securityPin !== 'string') {
+        return res.status(400).json({ msg: 'Geçersiz istek' });
+    }
+
+    // Güvenlik PIN'i environment variable olarak ZORUNLU (varsayılan değer yok)
+    const serverPin = process.env.ADMIN_SECURITY_PIN;
+    if (!serverPin || !auth.getSecret()) {
+        console.error('ADMIN_SECURITY_PIN veya JWT_SECRET tanımlı değil.');
+        return res.status(500).json({ msg: 'Sunucu yapılandırma hatası' });
+    }
+    if (!safeEqual(securityPin, serverPin)) {
         return res.status(400).json({ msg: 'Geçersiz Güvenlik PIN Kodu' });
     }
 
     try {
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ email: email.toLowerCase().trim() });
 
-        if (!user) {
+        // Kullanıcı yoksa da bcrypt çalıştır (zamanlama farkından kullanıcı tespitini önler)
+        const hash = user ? user.password : '$2a$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidinva';
+        const isMatch = await bcrypt.compare(password, hash);
+
+        if (!user || !isMatch) {
             return res.status(400).json({ msg: 'Geçersiz E-Posta veya Şifre' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        // Generate 6-digit secure OTP (kriptografik rastgele)
+        const otpCode = crypto.randomInt(100000, 1000000).toString();
 
-        if (!isMatch) {
-            return res.status(400).json({ msg: 'Geçersiz E-Posta veya Şifre' });
-        }
-
-        // Generate 6-digit secure OTP
-        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-        
         // Expiration: 2 minutes
-        const otpExpires = new Date(Date.now() + 2 * 60 * 1000); 
+        const otpExpires = new Date(Date.now() + 2 * 60 * 1000);
 
         user.otpCode = otpCode;
         user.otpExpires = otpExpires;
+        user.otpAttempts = 0;
         await user.save();
 
         // Send Telegram OTP Message
@@ -54,8 +77,8 @@ router.post('/login', loginLimiter, async (req, res) => {
             message: `🔒 <b>Ceylan.m.e Yönetim Paneli Girişi</b>\n\nGiriş yapmak için tek kullanımlık doğrulama kodunuz:\n\n<code>${otpCode}</code>\n\n<i>Bu kod 2 dakika boyunca geçerlidir. Güvenliğiniz için kimseyle paylaşmayın.</i>`
         });
 
-        if (!telegramSent) {
-            console.log(`[SECURE FALLBACK LOG] Telegram OTP Code: ${otpCode}`);
+        if (!telegramSent && process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+            console.log(`[DEV ONLY] Telegram OTP Code: ${otpCode}`);
         }
 
         return res.json({ msg: 'Doğrulama kodu Telegram hesabınıza gönderildi.', step: 2 });
@@ -68,22 +91,22 @@ router.post('/login', loginLimiter, async (req, res) => {
 // @route   POST api/auth/verify-otp
 // @desc    Verify OTP and issue JWT Token
 // @access  Public
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', otpLimiter, async (req, res) => {
     const { email, otpCode } = req.body;
 
+    if (typeof email !== 'string' || typeof otpCode !== 'string') {
+        return res.status(400).json({ msg: 'Geçersiz istek' });
+    }
+
     try {
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ email: email.toLowerCase().trim() });
+        const invalid = { msg: 'Hatalı veya geçersiz doğrulama kodu' };
 
-        if (!user) {
-            return res.status(400).json({ msg: 'Kullanıcı bulunamadı' });
+        if (!user || !user.otpCode || !user.otpExpires) {
+            return res.status(400).json(invalid);
         }
 
-        // Strict OTP match check
-        if (!user.otpCode || user.otpCode !== otpCode) {
-            return res.status(400).json({ msg: 'Hatalı veya geçersiz doğrulama kodu' });
-        }
-
-        // Check expiration
+        // Süre kontrolü
         if (user.otpExpires < new Date()) {
             user.otpCode = null;
             user.otpExpires = null;
@@ -91,24 +114,38 @@ router.post('/verify-otp', async (req, res) => {
             return res.status(400).json({ msg: 'Doğrulama kodunun süresi dolmuş. Lütfen tekrar giriş yapın.' });
         }
 
+        // Deneme sınırı: 5 yanlış denemeden sonra kod iptal edilir
+        if ((user.otpAttempts || 0) >= MAX_OTP_ATTEMPTS) {
+            user.otpCode = null;
+            user.otpExpires = null;
+            await user.save();
+            return res.status(429).json({ msg: 'Çok fazla hatalı deneme. Lütfen tekrar giriş yapın.' });
+        }
+
+        if (!safeEqual(user.otpCode, otpCode)) {
+            user.otpAttempts = (user.otpAttempts || 0) + 1;
+            await user.save();
+            return res.status(400).json(invalid);
+        }
+
         // Clear used OTP
         user.otpCode = null;
         user.otpExpires = null;
+        user.otpAttempts = 0;
         await user.save();
 
         // Issue Secure JWT Token
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
+        const payload = { user: { id: user.id } };
 
         jwt.sign(
             payload,
-            process.env.JWT_SECRET || 'ceylanme_jwt_secret_key_2026',
-            { expiresIn: 86400 }, // 24 hours
+            auth.getSecret(),
+            { expiresIn: '12h', algorithm: 'HS256' },
             (err, token) => {
-                if (err) throw err;
+                if (err) {
+                    console.error('JWT sign error:', err.message);
+                    return res.status(500).json({ msg: 'Sunucu hatası' });
+                }
                 res.json({ token, msg: 'Giriş başarılı' });
             }
         );

@@ -1,20 +1,43 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = function (req, res, next) {
-    // Get token from header
-    const token = req.header('x-auth-token');
+// JWT secret: production'da MUTLAKA environment variable olarak tanımlanmalı.
+// Kod içinde tahmin edilebilir varsayılan secret YOKTUR (yalnızca local geliştirmede geçici anahtar).
+const getSecret = () => {
+    if (process.env.JWT_SECRET && process.env.JWT_SECRET.length >= 24) return process.env.JWT_SECRET;
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) return 'dev-only-insecure-secret-change-me';
+    return null;
+};
 
-    // Check if not token
+const verifyToken = (token) => {
+    const secret = getSecret();
+    if (!secret || !token) return null;
+    try {
+        const decoded = jwt.verify(token, secret, { algorithms: ['HS256'] });
+        return decoded.user || null;
+    } catch (err) {
+        return null;
+    }
+};
+
+const auth = function (req, res, next) {
+    if (!getSecret()) {
+        console.error('JWT_SECRET tanımlı değil veya çok kısa (min 24 karakter).');
+        return res.status(500).json({ msg: 'Sunucu yapılandırma hatası' });
+    }
+    const token = req.header('x-auth-token');
     if (!token) {
         return res.status(401).json({ msg: 'No token, authorization denied' });
     }
-
-    // Verify token
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'ceylanme_jwt_secret_key_2026');
-        req.user = decoded.user;
-        next();
-    } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
+    const user = verifyToken(token);
+    if (!user) {
+        return res.status(401).json({ msg: 'Token is not valid' });
     }
+    req.user = user;
+    next();
 };
+
+// Zorunlu olmayan kontrol: istek geçerli bir admin token'ı taşıyor mu?
+auth.isAdminRequest = (req) => !!verifyToken(req.header('x-auth-token'));
+auth.getSecret = getSecret;
+
+module.exports = auth;

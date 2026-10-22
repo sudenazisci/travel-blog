@@ -7,7 +7,7 @@ export const STORAGE_KEYS = {
 
 export const getCachedData = (key, fallback = null) => {
     try {
-        const item = sessionStorage.getItem(key);
+        const item = localStorage.getItem(key);
         return item ? JSON.parse(item) : fallback;
     } catch (e) {
         return fallback;
@@ -17,7 +17,7 @@ export const getCachedData = (key, fallback = null) => {
 export const setCachedData = (key, data) => {
     try {
         if (data) {
-            sessionStorage.setItem(key, JSON.stringify(data));
+            localStorage.setItem(key, JSON.stringify(data));
         }
     } catch (e) {
         console.debug('Storage error:', e);

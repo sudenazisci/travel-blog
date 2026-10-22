@@ -11,7 +11,7 @@ const fs = require('fs');
 router.get('/sitemap.xml', async (req, res) => {
     try {
         const baseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-        const blogs = await Blog.find({}, '_id slug updatedAt');
+        const blogs = await Blog.find({ isDraft: { $ne: true } }, '_id slug updatedAt');
         const destinations = await Destination.find({}, '_id name updatedAt');
 
         let xml = `<?xml version="1.0" encoding="UTF-8"?>

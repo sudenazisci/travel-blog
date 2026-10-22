@@ -60,8 +60,8 @@ const Home = () => {
             if (blogs.length === 0) setLoading(true);
             setError(null);
             try {
-                let url = `${API_BASE}/api/blogs?page=${page}&limit=${limit}`;
-                if (query) url += `&search=${query}`;
+                let url = `${API_BASE}/api/blogs?page=${page}&limit=${limit}&excerpt=1`;
+                if (query) url += `&search=${encodeURIComponent(query)}`;
 
                 const res = await axios.get(url);
                 if (res.data.blogs) {

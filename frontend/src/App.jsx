@@ -2,29 +2,33 @@ import React from 'react';
 import API_BASE from './api';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import BlogDetail from './pages/BlogDetail';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
-import Destinations from './pages/Destinations';
-import DestinationDetail from './pages/DestinationDetail';
-import About from './pages/About';
-import AdminPosts from './pages/admin/AdminPosts';
-import AdminPostEditor from './pages/admin/AdminPostEditor';
-import AdminDestinations from './pages/admin/AdminDestinations';
-import AdminRegions from './pages/admin/AdminRegions';
-import AdminSettings from './pages/admin/AdminSettings';
-import AdminStatistics from './pages/admin/AdminStatistics';
-import AdminAIGenerator from './pages/admin/AdminAIGenerator';
-import DestinationPage from './pages/DestinationPage';
-import NotFound from './pages/NotFound';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService';
-import Contact from './pages/Contact';
-import CookiePolicy from './pages/CookiePolicy';
-import AdvertisingPolicy from './pages/AdvertisingPolicy';
+const BlogDetail = React.lazy(() => import('./pages/BlogDetail'));
+const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+const Destinations = React.lazy(() => import('./pages/Destinations'));
+const DestinationDetail = React.lazy(() => import('./pages/DestinationDetail'));
+const About = React.lazy(() => import('./pages/About'));
+const AdminPosts = React.lazy(() => import('./pages/admin/AdminPosts'));
+const AdminPostEditor = React.lazy(() => import('./pages/admin/AdminPostEditor'));
+const AdminDestinations = React.lazy(() => import('./pages/admin/AdminDestinations'));
+const AdminRegions = React.lazy(() => import('./pages/admin/AdminRegions'));
+const AdminSettings = React.lazy(() => import('./pages/admin/AdminSettings'));
+const AdminStatistics = React.lazy(() => import('./pages/admin/AdminStatistics'));
+const AdminAIGenerator = React.lazy(() => import('./pages/admin/AdminAIGenerator'));
+const DestinationPage = React.lazy(() => import('./pages/DestinationPage'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
+const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = React.lazy(() => import('./pages/TermsOfService'));
+const Contact = React.lazy(() => import('./pages/Contact'));
+const CookiePolicy = React.lazy(() => import('./pages/CookiePolicy'));
+const AdvertisingPolicy = React.lazy(() => import('./pages/AdvertisingPolicy'));
 import PrivateRoute from './components/PrivateRoute';
 import CookieConsent from './components/CookieConsent';
 import axios from 'axios';
+import setupAxios from './setupAxios';
+import VisitorTracker from './components/VisitorTracker';
+
+setupAxios();
 
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
@@ -43,12 +47,6 @@ function App() {
                 }
             })
             .catch(err => console.error("Settings fetch error:", err));
-
-        if (!visitIncremented.current) {
-            visitIncremented.current = true;
-            axios.post(`${API_BASE}/api/settings/visit`)
-                .catch(err => console.error("Visit tracking error:", err));
-        }
     }, []);
 
     return (
@@ -60,6 +58,8 @@ function App() {
                 </Helmet>
             )}
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <VisitorTracker />
+                <React.Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/blog/:id" element={<BlogDetail />} />
@@ -97,6 +97,7 @@ function App() {
                     {/* 404 Route - Must be last */}
                     <Route path="*" element={<NotFound />} />
                 </Routes>
+                </React.Suspense>
                 
                 {/* Global Cookie Consent Banner */}
                 <CookieConsent onAccept={(val) => setIsConsentGiven(val)} />
