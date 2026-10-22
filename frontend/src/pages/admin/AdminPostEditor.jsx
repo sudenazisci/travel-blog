@@ -130,45 +130,56 @@ const AdminPostEditor = () => {
         return `${API_BASE.replace(/\/$/, '')}/${value.replace(/^\//, '')}`;
     };
 
+
     const selectImage = (imageUrl) => {
         const resolved = resolveMediaUrl(imageUrl);
 
         if (!resolved) {
-            alert('Görsel adresi bulunamadı.');
+            alert('Görsel bağlantısı bulunamadı.');
             return;
         }
 
         if (isQuillImageSelection) {
-            const editor = quillRef.current?.getEditor();
+            const quill = quillRef.current?.getEditor();
 
-            if (!editor) {
-                alert('Metin editörü bulunamadı.');
-                return;
-            }
+            if (!quill) return;
 
-            const range = editor.getSelection() || {
-                index: editor.getLength() - 1,
-                length: 0
+            // Galeri açılmadan önce kaydedilen imleç konumunu kullan.
+            const savedRange = quill.__savedImageRange;
+            const range = savedRange || {
+                index: Math.max(0, quill.getLength() - 1),
+                length: 0,
             };
 
-            editor.insertEmbed(range.index, 'image', resolved, 'user');
-            editor.setSelection(range.index + 1, 0, 'user');
+            quill.focus();
+            quill.insertEmbed(range.index, 'image', resolved, 'user');
+            quill.setSelection(range.index + 1, 0, 'silent');
 
+            delete quill.__savedImageRange;
             setIsQuillImageSelection(false);
         } else {
-            setFormData(prev => ({
-                ...prev,
-                image: resolved
-            }));
+            setFormData((prev) => ({ ...prev, image: resolved }));
         }
 
         setShowGallery(false);
     };
-    // Custom Image Handler for Quill
+
+
     const imageHandler = () => {
+        const quill = quillRef.current?.getEditor();
+
+        if (quill) {
+            // Galeri açılmadan önce imlecin yerini sakla.
+            quill.__savedImageRange = quill.getSelection() || {
+                index: Math.max(0, quill.getLength() - 1),
+                length: 0,
+            };
+        }
+
         setIsQuillImageSelection(true);
         openGallery();
     };
+
 
     const modules = useMemo(() => ({
         toolbar: {
