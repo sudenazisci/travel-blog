@@ -58,6 +58,10 @@ const AdminLogin = () => {
                 setSuccessMessage(res.data.msg || 'Doğrulama kodu Telegram hesabınıza gönderildi.');
             }
         } catch (err) {
+            if (!err.response) {
+                setError('API sunucusuna ulaşılamadı. VITE_API_URL ve backend adresini kontrol edin.');
+                return;
+            }
             setError(err.response?.data?.msg || 'Geçersiz Giriş Bilgileri');
         }
     };

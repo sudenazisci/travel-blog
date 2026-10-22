@@ -24,9 +24,10 @@ app.use(cors({
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
-// Body parser (boyut sınırlı)
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+// Body parser — büyük blog HTML + kapak URL; base64 görseller kayıtta dosyaya dönüştürülür
+const JSON_BODY_LIMIT = '15mb';
+app.use(express.json({ limit: JSON_BODY_LIMIT }));
+app.use(express.urlencoded({ extended: true, limit: JSON_BODY_LIMIT }));
 
 // Security Middleware
 app.use(helmet({
@@ -87,6 +88,20 @@ connectDB();
 // Her istek DB hazır olana kadar bekler (buffer timeout hatalarını önler)
 app.use(async (req, res, next) => { await connectDB(); next(); });
 
+let adminBootstrapDone = false;
+app.use(async (req, res, next) => {
+    if (!adminBootstrapDone && mongoose.connection.readyState === 1) {
+        adminBootstrapDone = true;
+        try {
+            await require('./services/adminBootstrap').ensureAdminUser();
+        } catch (err) {
+            adminBootstrapDone = false;
+            console.error('[adminBootstrap] Hata:', err.message);
+        }
+    }
+    next();
+});
+
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
@@ -114,8 +129,14 @@ app.use('/', sitemapRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    console.error('Unhandled Error:', err);
-    res.status(500).json({ error: 'Internal Server Error', details: err.message });
+    if (err.type === 'entity.too.large') {
+        console.error('Payload too large:', err.length, 'limit:', err.limit);
+        return res.status(413).json({
+            msg: 'İstek gövdesi çok büyük. Görselleri galeriden yükleyin; yapıştırılan base64 görseller kayıtta otomatik dönüştürülür.'
+        });
+    }
+    console.error('Unhandled Error:', err.message || err);
+    res.status(500).json({ error: 'Internal Server Error' });
 });
 
 // Make uploads folder static

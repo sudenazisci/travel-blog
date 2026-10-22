@@ -113,18 +113,57 @@ const AdminPostEditor = () => {
         } catch (err) { console.error(err); }
     };
 
-    const selectImage = (imageUrl) => {
-        if (isQuillImageSelection) {
-            const quill = quillRef.current.getEditor();
-            const range = quill.getSelection(true);
-            quill.insertEmbed(range.index, 'image', imageUrl);
-            setIsQuillImageSelection(false);
-        } else {
-            setFormData({ ...formData, image: imageUrl });
+    const resolveMediaUrl = (url) => {
+        if (!url) return '';
+
+        const value = String(url).trim();
+
+        if (
+            value.startsWith('https://') ||
+            value.startsWith('http://') ||
+            value.startsWith('data:') ||
+            value.startsWith('blob:')
+        ) {
+            return value;
         }
-        setShowGallery(false);
+
+        return `${API_BASE.replace(/\/$/, '')}/${value.replace(/^\//, '')}`;
     };
 
+    const selectImage = (imageUrl) => {
+        const resolved = resolveMediaUrl(imageUrl);
+
+        if (!resolved) {
+            alert('Görsel adresi bulunamadı.');
+            return;
+        }
+
+        if (isQuillImageSelection) {
+            const editor = quillRef.current?.getEditor();
+
+            if (!editor) {
+                alert('Metin editörü bulunamadı.');
+                return;
+            }
+
+            const range = editor.getSelection() || {
+                index: editor.getLength() - 1,
+                length: 0
+            };
+
+            editor.insertEmbed(range.index, 'image', resolved, 'user');
+            editor.setSelection(range.index + 1, 0, 'user');
+
+            setIsQuillImageSelection(false);
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                image: resolved
+            }));
+        }
+
+        setShowGallery(false);
+    };
     // Custom Image Handler for Quill
     const imageHandler = () => {
         setIsQuillImageSelection(true);
@@ -162,28 +201,70 @@ const AdminPostEditor = () => {
     };
 
     const handleGalleryUpload = async (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
+
+        // Aynı dosyanın tekrar seçilebilmesine izin ver.
+        e.target.value = '';
+
         if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('Lütfen bir görsel dosyası seçin.');
+            return;
+        }
 
         const formDataUpload = new FormData();
         formDataUpload.append('image', file);
         setUploading(true);
 
         try {
-            await axios.post(`${API_BASE}/api/upload`, formDataUpload, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-            // Refresh gallery after upload
-            const fileRes = await axios.get(`${API_BASE}/api/upload/files`);
+            const uploadRes = await axios.post(
+                `${API_BASE}/api/upload`,
+                formDataUpload
+            );
+
+            const uploadedUrl =
+                uploadRes.data.url ||
+                uploadRes.data.secure_url ||
+                uploadRes.data.filePath ||
+                uploadRes.data.path;
+
+            // Galerideki mevcut görselleri yenile.
+            const fileRes = await axios.get(
+                `${API_BASE}/api/upload/files`
+            );
+
             setGalleryImages(fileRes.data);
-            setUploading(false);
+
+            // Görsel ekleme düğmesi üzerinden geldiysek
+            // yüklenen resmi doğrudan yazıya ekle.
+            if (isQuillImageSelection) {
+                if (!uploadedUrl) {
+                    alert(
+                        'Görsel yüklendi ancak sunucu görsel adresini döndürmedi. Galeriden görseli seçebilirsiniz.'
+                    );
+                    return;
+                }
+
+                selectImage(uploadedUrl);
+            } else if (uploadedUrl) {
+                // Galeri kapak görseli için açıldıysa
+                // kapak görselini de güncelle.
+                setFormData(prev => ({
+                    ...prev,
+                    image: resolveMediaUrl(uploadedUrl)
+                }));
+            }
         } catch (err) {
-            console.error(err);
+            console.error('Görsel yükleme hatası:', err);
+            alert(
+                err.response?.data?.msg ||
+                'Görsel yüklenemedi. Sunucu yanıtını kontrol edin.'
+            );
+        } finally {
             setUploading(false);
-            alert('Yükleme başarısız');
         }
     };
-
     const handleSubmit = async (e, targetDraftState = false) => {
         if (e && e.preventDefault) e.preventDefault();
         const token = localStorage.getItem('token');
@@ -212,8 +293,8 @@ const AdminPostEditor = () => {
                 finalDestinationId = formData.region; // Fallback to region
             }
 
-            const payload = { 
-                ...formData, 
+            const payload = {
+                ...formData,
                 destination: finalDestinationId,
                 isDraft: targetDraftState
             };
@@ -226,7 +307,14 @@ const AdminPostEditor = () => {
             navigate('/admin/posts');
         } catch (err) {
             console.error(err);
-            alert('Yazı kaydedilirken bir hata oluştu');
+            const msg = err.response?.data?.msg || err.response?.data?.error;
+            if (err.response?.status === 413) {
+                alert(msg || 'İçerik çok büyük. Görselleri galeriden yükleyin.');
+            } else if (err.response?.status === 401) {
+                alert('Oturum süresi doldu. Lütfen tekrar giriş yapın.');
+            } else {
+                alert(msg || 'Yazı kaydedilirken bir hata oluştu');
+            }
         }
     };
 
@@ -409,23 +497,23 @@ const AdminPostEditor = () => {
                         )}
                     </div>
                     <div className="flex gap-3 items-center">
-                        <button 
-                            type="button" 
-                            onClick={() => navigate('/admin/posts')} 
+                        <button
+                            type="button"
+                            onClick={() => navigate('/admin/posts')}
                             className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm"
                         >
                             İptal
                         </button>
-                        <button 
-                            type="button" 
-                            onClick={(e) => handleSubmit(e, true)} 
+                        <button
+                            type="button"
+                            onClick={(e) => handleSubmit(e, true)}
                             className="px-4 py-2 border border-amber-300 bg-amber-50 text-amber-800 font-medium rounded-lg hover:bg-amber-100 transition-colors text-sm"
                         >
                             📁 Taslak Kaydet
                         </button>
-                        <button 
-                            type="button" 
-                            onClick={(e) => handleSubmit(e, false)} 
+                        <button
+                            type="button"
+                            onClick={(e) => handleSubmit(e, false)}
                             className="px-6 py-2 bg-primary text-white font-medium rounded-lg hover:bg-accent transition-colors shadow-md text-sm"
                         >
                             🚀 {id ? 'Güncelle & Yayınla' : 'Yayına Al'}

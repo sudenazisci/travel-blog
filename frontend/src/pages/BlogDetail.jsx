@@ -23,7 +23,7 @@ const BlogDetail = () => {
 
                 if (!viewIncremented.current && !res.data.isDraft && !localStorage.getItem('token') && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
                     viewIncremented.current = true;
-                    await axios.post(`${API_BASE}/api/blogs/${id}/view`).catch(() => {});
+                    await axios.post(`${API_BASE}/api/blogs/${id}/view`).catch(() => { });
                 }
             } catch (err) {
                 console.error('Error fetching blog detail:', err);
@@ -104,11 +104,11 @@ const BlogDetail = () => {
                 <Navbar />
 
                 <main className="max-w-[960px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 w-full">
-                    
+
                     {/* Back Link */}
                     <div className="mb-6">
-                        <Link 
-                            to="/" 
+                        <Link
+                            to="/"
                             className="inline-flex items-center gap-2 font-mono text-xs font-bold text-[#78746D] hover:text-[#A34828] transition-colors uppercase tracking-widest min-h-[44px]"
                         >
                             <ArrowLeft size={14} />
@@ -118,18 +118,18 @@ const BlogDetail = () => {
 
                     {/* Article */}
                     <article className="border-t border-[#1A1918]/15 pt-8">
-                        
+
                         {/* Header */}
                         <header className="mb-10 text-center max-w-3xl mx-auto">
                             {blog.destination && (
-                                <Link 
-                                    to={`/destination/${(typeof blog.destination === 'object' && blog.destination ? blog.destination._id : blog.destination) || ''}`} 
+                                <Link
+                                    to={`/destination/${(typeof blog.destination === 'object' && blog.destination ? blog.destination._id : blog.destination) || ''}`}
                                     className="inline-block font-mono text-xs font-bold text-[#A34828] uppercase tracking-[0.25em] mb-4 hover:underline"
                                 >
                                     {(typeof blog.destination === 'object' && blog.destination ? blog.destination.name : 'Destinasyon') || 'Destinasyon'}
                                 </Link>
                             )}
-                            
+
                             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal text-[#1A1918] leading-[1.12] tracking-tight mb-6">
                                 {blog.title}
                             </h1>
@@ -178,9 +178,12 @@ const BlogDetail = () => {
                         {/* Content & In-Article Sponsorship Banner */}
                         <div className="bg-[#FBF9F5] border border-[#1A1918]/12 rounded-sm p-6 sm:p-10 md:p-12 shadow-sm my-8 relative overflow-hidden">
                             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#A34828] via-[#1A1918] to-[#A34828]"></div>
-                            
+
                             <div className="max-w-[760px] mx-auto blog-content-editorial first-letter-dropcap">
-                                <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
+                                <div
+                                    className="blog-content-body"
+                                    dangerouslySetInnerHTML={{ __html: blog.content }}
+                                />
 
                                 {/* In-Article Sponsorship Box Corner */}
                                 <div className="pt-8 mt-8 border-t border-[#1A1918]/10">

@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 const Blog = require('../models/Blog');
+const { externalizeDataUriImages, externalizeIfDataUri } = require('../utils/htmlImages');
+
+async function prepareBlogMedia(body) {
+    const out = { ...body };
+    if (out.content !== undefined) {
+        out.content = await externalizeDataUriImages(out.content);
+    }
+    if (out.image !== undefined) {
+        out.image = await externalizeIfDataUri(out.image);
+    }
+    return out;
+}
 
 // @route   GET api/blogs
 // @desc    Get all blogs
@@ -126,9 +138,10 @@ router.get('/:id', async (req, res) => {
 // @desc    Create a blog
 // @access  Private
 router.post('/', auth, async (req, res) => {
-    const { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition, isDraft, category, country, city, travelDate } = req.body;
+    let { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition, isDraft, category, country, city, travelDate } = req.body;
 
     try {
+        ({ content, image } = await prepareBlogMedia({ content, image }));
         const newBlog = new Blog({
             title,
             content,
@@ -149,6 +162,9 @@ router.post('/', auth, async (req, res) => {
         res.json(blog);
     } catch (err) {
         console.error(err.message);
+        if (err.message && err.message.includes('sınırını')) {
+            return res.status(413).json({ msg: err.message });
+        }
         res.status(500).send('Server Error');
     }
 });
@@ -157,7 +173,7 @@ router.post('/', auth, async (req, res) => {
 // @desc    Update a blog
 // @access  Private
 router.put('/:id', auth, async (req, res) => {
-    const { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition, isDraft, category, country, city, travelDate } = req.body;
+    let { title, content, image, destination, slug, metaTitle, metaDescription, imagePosition, isDraft, category, country, city, travelDate } = req.body;
 
     try {
         let blog = await Blog.findById(req.params.id);
@@ -167,8 +183,14 @@ router.put('/:id', auth, async (req, res) => {
         }
 
         if (title !== undefined) blog.title = title;
-        if (content !== undefined) blog.content = content;
-        if (image !== undefined) blog.image = image;
+        if (content !== undefined) {
+            const media = await prepareBlogMedia({ content });
+            blog.content = media.content;
+        }
+        if (image !== undefined) {
+            const media = await prepareBlogMedia({ image });
+            blog.image = media.image;
+        }
         if (destination !== undefined) blog.destination = destination;
         if (slug !== undefined) blog.slug = slug;
         if (metaTitle !== undefined) blog.metaTitle = metaTitle;
@@ -184,6 +206,9 @@ router.put('/:id', auth, async (req, res) => {
         res.json(blog);
     } catch (err) {
         console.error(err.message);
+        if (err.message && err.message.includes('sınırını')) {
+            return res.status(413).json({ msg: err.message });
+        }
         res.status(500).send('Server Error');
     }
 });

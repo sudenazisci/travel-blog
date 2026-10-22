@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken');
 // JWT secret: production'da MUTLAKA environment variable olarak tanımlanmalı.
 // Kod içinde tahmin edilebilir varsayılan secret YOKTUR (yalnızca local geliştirmede geçici anahtar).
 const getSecret = () => {
-    if (process.env.JWT_SECRET && process.env.JWT_SECRET.length >= 24) return process.env.JWT_SECRET;
+    const raw = process.env.JWT_SECRET;
+    const secret = typeof raw === 'string' ? raw.trim() : raw;
+    if (secret && secret.length >= 24) return secret;
     if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) return 'dev-only-insecure-secret-change-me';
     return null;
 };
