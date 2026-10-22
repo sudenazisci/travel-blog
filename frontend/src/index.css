@@ -406,3 +406,112 @@ article {
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
+
+/* Blog detay sayfasındaki tüm metinler */
+article,
+article *,
+.blog-content-editorial,
+.blog-content-editorial *,
+.blog-content-body,
+.blog-content-body * {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Blog yazısının ana metni */
+.blog-content-body {
+  font-size: 18px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Yazı içindeki başlıklar */
+.blog-content-body h1,
+.blog-content-body h2,
+.blog-content-body h3,
+.blog-content-body h4,
+.blog-content-body h5,
+.blog-content-body h6 {
+  font-weight: bold;
+  line-height: 1.4;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+}
+
+/* Paragraflar ve listeler */
+.blog-content-body p,
+.blog-content-body li,
+.blog-content-body blockquote {
+  line-height: 1.9;
+}
+
+/* Yazı içindeki görseller */
+.blog-content-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 32px auto;
+  object-fit: contain;
+}
+
+/* Görsel açıklamaları */
+.blog-content-body figcaption {
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+/* Türkçe karakterlerin doğal görüntülenmesi */
+article {
+  font-kerning: normal;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==================================================
+   CEYLAN.M.E — TÜM SİTEDE TIMES NEW ROMAN
+   ================================================== */
+
+html,
+body,
+#root {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Tüm arayüz elemanları ve metinler */
+body *,
+body *::before,
+body *::after {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Form alanları da aynı fontu kullansın */
+input,
+textarea,
+select,
+option,
+button {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* Font ağırlıklarını tutarlı tut */
+body {
+  font-synthesis: none;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobil tarayıcılarda otomatik metin büyütmeyi önle */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Türkçe karakterlerin ayrı fonttan gelmesini önle */
+body,
+body * {
+  font-variant-ligatures: normal;
+}
