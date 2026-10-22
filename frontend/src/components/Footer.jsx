@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
-import { SiTiktok, SiThreads } from '@icons-pack/react-simple-icons';
+
 
 const Footer = () => {
     const handleOpenCookieSettings = (e) => {
@@ -52,7 +52,15 @@ const Footer = () => {
                                 className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1918] hover:text-[#A34828] transition-colors flex items-center gap-1"
                                 aria-label="TikTok"
                             >
-                                <SiTiktok size={13} />
+                                <svg
+                                    width="13"
+                                    height="13"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.1V2h-3.56v13.67a2.9 2.9 0 0 1-2.9 2.9 2.9 2.9 0 1 1 2.9-2.9V12.1a6.47 6.47 0 1 0 3.56 5.77V10.9a8.35 8.35 0 0 0 4.89 1.57V8.91a4.85 4.85 0 0 1-1.12-.13Z" />
+                                </svg>
                                 <span>TIKTOK</span>
                             </a>
 
@@ -65,7 +73,20 @@ const Footer = () => {
                                 className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1A1918] hover:text-[#A34828] transition-colors flex items-center gap-1"
                                 aria-label="Threads"
                             >
-                                <SiThreads size={13} />
+                                <svg
+                                    width="13"
+                                    height="13"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M12 21c-5.2 0-8.5-3.5-8.5-9S6.8 3 12 3c4.7 0 7.7 2.7 8.3 7.2.5 4.3-1.4 7.1-5.1 7.1-2.1 0-3.4-1.2-3.4-3s1.3-3 3.2-3c2.4 0 4.1 1.4 4.8 3.4" />
+                                    <path d="M16.7 11.4c-.9-1.4-2.4-2.2-4.4-2.2-2.3 0-3.8 1.3-3.8 3.2s1.4 3.1 3.6 3.1c2.3 0 4.1-1.5 4.6-4.1" />
+                                </svg>
                                 <span>THREADS</span>
                             </a>
 
