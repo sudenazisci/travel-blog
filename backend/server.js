@@ -48,9 +48,19 @@ app.use('/api', apiLimiter);
 app.use(noSqlInjectionPrevent);
 app.use(customHpp);
 
-// Request Logger
+// Request Logger — istek sürelerini ölçer
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.originalUrl}`);
+    const start = Date.now();
+
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+
+        console.log(
+            `[PERFORMANCE] ${req.method} ${req.path} | ` +
+            `Status: ${res.statusCode} | ${duration}ms`
+        );
+    });
+
     next();
 });
 
