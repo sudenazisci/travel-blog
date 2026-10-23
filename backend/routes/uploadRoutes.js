@@ -70,7 +70,12 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
             fileName: result.public_id
         });
     } catch (error) {
-        console.error('Cloudinary yükleme hatası:', error.message);
+        console.error('Cloudinary yükleme hatası:', {
+            message: error.message,
+            http_code: error.http_code,
+            name: error.name,
+            code: error.code
+        });
         return res.status(500).json({
             msg: 'Görsel yüklenemedi. Depolama ayarlarını kontrol edin.'
         });
