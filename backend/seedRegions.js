@@ -7,7 +7,10 @@ dotenv.config();
 const regions = [
     { name: 'TÜRKİYE', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&auto=format&fit=crop&q=60' },
     { name: 'ASYA', image: 'https://images.unsplash.com/photo-1535139262971-c51845709a48?w=800&auto=format&fit=crop&q=60' },
-    { name: 'AVRUPA', image: 'https://images.unsplash.com/photo-1467269204594-9661b133dd2b?w=800&auto=format&fit=crop&q=60' },
+    {
+        name: 'AVRUPA',
+        image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80'
+    },
     { name: 'GÜNEY AMERİKA', image: 'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800&auto=format&fit=crop&q=60' },
     { name: 'KUZEY AMERİKA', image: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&auto=format&fit=crop&q=60' },
     { name: 'AFRİKA', image: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&auto=format&fit=crop&q=60' }
