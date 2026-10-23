@@ -40,9 +40,9 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
 
     return (
         <div className="bg-[#FBF9F5] min-h-screen flex flex-col justify-between font-sans text-[#1A1918] antialiased selection:bg-[#A34828]/15 selection:text-[#1A1918]">
-            <SEO 
-                title="Hakkımda — Ceylan.m.e" 
-                description="Ceylan.m.e seyahat günlüğü, gezi rehberleri, fotoğrafçılık ve seyahat hikayeleri." 
+            <SEO
+                title="Hakkımda — Ceylan.m.e"
+                description="Ceylan.m.e seyahat günlüğü, gezi rehberleri, fotoğrafçılık ve seyahat hikayeleri."
             />
             <Navbar />
 
@@ -51,7 +51,7 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                 <section className="py-12 md:py-24 border-b border-[#1A1918]/15">
                     <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                            
+
                             <div className="lg:col-span-7 space-y-6">
                                 <span className="font-mono text-[10px] font-bold text-[#A34828] uppercase tracking-[0.25em] block">
                                     CEYLAN’IN SEYAHAT GÜNLÜĞÜ
@@ -76,13 +76,13 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                             <div className="lg:col-span-5">
                                 <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-2.5 sm:p-3">
                                     <img
-                                        src={settings?.aboutHeroImage || "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&auto=format&fit=crop&q=80"}
-                                        alt="Seyahat Görseli"
+                                        src="/hakkımda1.jpg"
+                                        alt="Ceylan'ın seyahat günlüğü"
                                         className="w-full h-[260px] sm:h-[400px] object-cover"
                                     />
                                     <div className="pt-2 font-mono text-[10px] uppercase text-[#78746D] flex justify-between">
-                                        <span>{settings?.aboutHeroImageCaption || "KAPADOKYA, TÜRKİYE"}</span>
-                                        <span>{settings?.aboutHeroImageCoords || "38.6431° N · 34.8289° E"}</span>
+                                        <span>{settings?.aboutHeroImageCaption || "LAPLAND, FİNLANDİYA"}</span>
+                                        <span>{settings?.aboutHeroImageCoords || "67°55′20″ N, 26°30′16″ E"}</span>
                                     </div>
                                 </div>
                             </div>
@@ -111,8 +111,8 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                         <div className="lg:col-span-5 order-2 lg:order-1">
                             <div className="border border-[#1A1918]/15 bg-[#F4F0E8] p-2.5 sm:p-3">
                                 <img
-                                    src={fullImgUrl}
-                                    alt="Ceylan"
+                                    src="/hakkımda2.jpg"
+                                    alt="Ceylan'ın seyahat hikâyesi"
                                     className="w-full h-[280px] sm:h-[460px] object-cover"
                                 />
                             </div>
