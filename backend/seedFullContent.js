@@ -18,7 +18,7 @@ const seedFullContent = async () => {
         const regionDefs = [
             { name: 'TÜRKİYE', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&auto=format&fit=crop&q=80', description: 'Türkiye gezileri, antik kentler ve cennet koylar.' },
             { name: 'ASYA', image: 'https://images.unsplash.com/photo-1535139262971-c51845709a48?w=800&auto=format&fit=crop&q=80', description: 'Gizemli doğu kültürü, tapınaklar ve egzotik lezzetler.' },
-            { name: 'AVRUPA', image: 'https://images.unsplash.com/photo-1467269204594-9661b133dd2b?w=800&auto=format&fit=crop&q=80', description: 'Tarihi mimari, romantik şehirler ve zengin kültür.' },
+            { name: 'AVRUPA', image: 'https://unsplash.com/photos/eiffel-tower-stands-tall-over-parisian-cityscape-l9LycduAnDA?utm_source=chatgpt.com', description: 'Tarihi mimari, romantik şehirler ve zengin kültür.' },
             { name: 'AFRİKA', image: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&auto=format&fit=crop&q=80', description: 'Vahşi yaşam safarileri ve mistik çöl seyahatleri.' },
             { name: 'GÜNEY AMERİKA', image: 'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800&auto=format&fit=crop&q=80', description: 'İnka medeniyeti, Amazon ormanları ve tutkulu şehirler.' },
             { name: 'KUZEY AMERİKA', image: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&auto=format&fit=crop&q=80', description: 'Gökdelenler, kanyonlar ve devasa milli parklar.' }

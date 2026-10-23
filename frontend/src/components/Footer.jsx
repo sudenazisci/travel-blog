@@ -19,7 +19,7 @@ const Footer = () => {
                     {/* Brand Column */}
                     <div className="lg:col-span-4 space-y-3">
                         <Link to="/" className="inline-block font-serif text-2xl font-bold text-[#1A1918] tracking-tight hover:text-[#A34828] transition-colors">
-                            Ceylan.m.e.
+                            Ceylan.m.e
                         </Link>
 
                         <div className="flex items-center gap-3 pt-1">
