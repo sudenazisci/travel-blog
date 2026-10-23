@@ -1,119 +1,106 @@
+
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const sharp = require('sharp');
+const { v2: cloudinary } = require('cloudinary');
 const auth = require('../middleware/authMiddleware');
 
-// Configure Multer Storage
-const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        const uploadDir = path.join(__dirname, '../uploads');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename(req, file, cb) {
-        const sanitized = file.originalname.replace(/[^a-zA-Z0-9.]/g, '_');
-        cb(null, `${Date.now()}_${sanitized}`);
-    }
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
-
-const checkFileType = (file, cb) => {
-    const filetypes = /jpg|jpeg|png|webp|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Yalnızca resim dosyaları yükleyebilirsiniz (JPG, PNG, WEBP, GIF).'));
-    }
-};
 
 const upload = multer({
-    storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB Max File Size
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter(req, file, cb) {
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/gif'
+        ];
+
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Yalnızca JPG, PNG, WEBP ve GIF yükleyebilirsiniz.'));
+        }
     }
 });
 
-// @route   POST /api/upload
-// @desc    Upload an image
-// @access  Private
+function uploadBuffer(buffer, options) {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            options,
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            }
+        );
+
+        stream.end(buffer);
+    });
+}
+
+// POST /api/upload
 router.post('/', auth, upload.single('image'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ msg: 'Resim yüklenemedi.' });
     }
 
     try {
-        const originalPath = req.file.path;
-        const newFilename = `hq-${Date.now()}.webp`;
-        const newPath = path.join(req.file.destination, newFilename);
-
-        // Resmin orijinal kalitesini bozmadan (%100) WebP optimizasyonu
-        await sharp(originalPath)
+        const optimizedBuffer = await sharp(req.file.buffer)
+            .rotate()
             .webp({ quality: 90 })
-            .toFile(newPath);
+            .toBuffer();
 
-        // Orijinal ham dosyayı sil
-        if (fs.existsSync(originalPath)) {
-            fs.unlinkSync(originalPath);
-        }
+        const result = await uploadBuffer(optimizedBuffer, {
+            folder: 'ceylanme/blog',
+            resource_type: 'image',
+            format: 'webp'
+        });
 
-        res.json({
-            filePath: `/uploads/${newFilename}`,
-            fileName: newFilename
+        return res.json({
+            url: result.secure_url,
+            secure_url: result.secure_url,
+            publicId: result.public_id,
+            fileName: result.public_id
         });
     } catch (error) {
-        console.error('Sharp Image Processing Error:', error);
-        res.status(500).json({ msg: 'Resim işlenirken sunucu hatası oluştu.' });
+        console.error('Cloudinary yükleme hatası:', error.message);
+        return res.status(500).json({
+            msg: 'Görsel yüklenemedi. Depolama ayarlarını kontrol edin.'
+        });
     }
 });
 
-// @route   GET /api/upload/files
-// @desc    List all uploaded images
-// @access  Public / Admin
-router.get('/files', auth, (req, res) => {
-    const directoryPath = path.join(__dirname, '../uploads');
+// GET /api/upload/files
+// Admin panelindeki medya galerisi
+router.get('/files', auth, async (req, res) => {
+    try {
+        const result = await cloudinary.api.resources({
+            type: 'upload',
+            prefix: 'ceylanme/blog/',
+            resource_type: 'image',
+            max_results: 100
+        });
 
-    if (!fs.existsSync(directoryPath)) {
-        fs.mkdirSync(directoryPath, { recursive: true });
-        return res.json([]);
-    }
-
-    fs.readdir(directoryPath, (err, files) => {
-        if (err) {
-            return res.status(500).json({ msg: 'Dosyalar okunamadı.' });
-        }
-
-        const fileInfos = files
-            .filter(file => /\.(jpg|jpeg|png|webp|gif)$/i.test(file))
-            .map(file => ({
-                name: file,
-                url: `/uploads/${file}`
+        return res.json(
+            result.resources.map(file => ({
+                name: file.public_id,
+                url: file.secure_url,
+                publicId: file.public_id,
+                createdAt: file.created_at
             }))
-            .reverse();
-
-        res.json(fileInfos);
-    });
-});
-
-// @route   DELETE /api/upload/:filename
-// @desc    Delete an uploaded image
-// @access  Private
-router.delete('/:filename', auth, (req, res) => {
-    const filename = path.basename(req.params.filename); // Sanitize filename to prevent path traversal
-    const filePath = path.join(__dirname, '../uploads', filename);
-
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        return res.json({ msg: 'Resim silindi.' });
-    } else {
-        return res.status(404).json({ msg: 'Dosya bulunamadı.' });
+        );
+    } catch (error) {
+        console.error('Cloudinary galeri hatası:', error.message);
+        return res.status(500).json({
+            msg: 'Görseller galeriden alınamadı.'
+        });
     }
 });
 

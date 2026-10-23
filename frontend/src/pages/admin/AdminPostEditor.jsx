@@ -82,8 +82,11 @@ const AdminPostEditor = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+
     const handleUpload = async (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
+        e.target.value = '';
+
         if (!file) return;
 
         const formDataUpload = new FormData();
@@ -91,19 +94,38 @@ const AdminPostEditor = () => {
         setUploading(true);
 
         try {
-            const res = await axios.post(`${API_BASE}/api/upload`, formDataUpload, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-            // Construct full URL (assuming backend is on port 5000)
-            const fullUrl = `${API_BASE}${res.data.filePath}`;
-            setFormData({ ...formData, image: fullUrl });
-            setUploading(false);
+            const res = await axios.post(
+                `${API_BASE}/api/upload`,
+                formDataUpload,
+                {
+                    headers: {
+                        'x-auth-token': localStorage.getItem('token')
+                    }
+                }
+            );
+
+            const imageUrl = res.data.secure_url || res.data.url;
+
+            if (!imageUrl || !imageUrl.startsWith('https://')) {
+                throw new Error('Sunucu geçerli bir görsel adresi döndürmedi.');
+            }
+
+            setFormData(prev => ({
+                ...prev,
+                image: imageUrl
+            }));
         } catch (err) {
-            console.error(err);
+            console.error('Kapak görseli yükleme hatası:', err);
+            alert(
+                err.response?.data?.msg ||
+                err.message ||
+                'Görsel yüklenemedi.'
+            );
+        } finally {
             setUploading(false);
-            alert('Yükleme başarısız');
         }
     };
+
 
     const openGallery = async () => {
         setShowGallery(true);
@@ -382,7 +404,7 @@ const AdminPostEditor = () => {
                                         <div
                                             className="h-48 w-full bg-cover bg-no-repeat bg-gray-100 relative"
                                             style={{
-                                                backgroundImage: `url('${formData.image.startsWith('http') ? formData.image : `${API_BASE}${formData.image}`}')`,
+                                                backgroundImage: `url("${resolveMediaUrl(formData.image)}")`,
                                                 backgroundPosition: `center ${formData.imagePosition || '50%'}`
                                             }}
                                         >
