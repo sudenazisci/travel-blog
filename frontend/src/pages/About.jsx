@@ -78,7 +78,7 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                                     <img
                                         src="/hakkımda1.jpg"
                                         alt="Ceylan'ın seyahat günlüğü"
-                                        className="w-full h-[260px] sm:h-[400px] object-cover"
+                                        className="w-full h-auto max-h-[500px] object-contain object-center"
                                     />
                                     <div className="pt-2 font-mono text-[10px] uppercase text-[#78746D] flex justify-between">
                                         <span>{settings?.aboutHeroImageCaption || "LAPLAND, FİNLANDİYA"}</span>
@@ -113,7 +113,7 @@ Tokyo’nun neon ışıklı sokaklarından Kapadokya’nın masalsı vadilerine,
                                 <img
                                     src="/hakkımda2.jpg"
                                     alt="Ceylan'ın seyahat hikâyesi"
-                                    className="w-full h-[280px] sm:h-[460px] object-cover"
+                                    className="w-full h-auto max-h-[600px] object-contain object-center"
                                 />
                             </div>
                         </div>
