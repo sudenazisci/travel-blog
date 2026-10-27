@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 const Blog = require('../models/Blog');
 const { externalizeDataUriImages, externalizeIfDataUri } = require('../utils/htmlImages');
+const cache = require('../services/cacheService');
 
 async function prepareBlogMedia(body) {
     const out = { ...body };
@@ -120,10 +121,17 @@ router.post('/:id/view', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id).populate('destination');
+        const cacheKey = `blog:${req.params.id}`;
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            return res.json(cached);
+        }
+        const blog = await Blog.findById(req.params.id).populate('destination').lean();
         if (!blog || (blog.isDraft && !auth.isAdminRequest(req))) {
             return res.status(404).json({ msg: 'Blog not found' });
         }
+        // Store in cache for 5 minutes
+        cache.set(cacheKey, blog, 300);
         res.json(blog);
     } catch (err) {
         console.error(err.message);
@@ -203,6 +211,8 @@ router.put('/:id', auth, async (req, res) => {
         if (travelDate !== undefined) blog.travelDate = travelDate;
 
         await blog.save();
+        // Invalidate cache for this blog
+        cache.del(`blog:${req.params.id}`);
         res.json(blog);
     } catch (err) {
         console.error(err.message);
@@ -221,6 +231,8 @@ router.delete('/:id', auth, async (req, res) => {
         // findByIdAndDelete is shorter but findById allows for existence check if needed, 
         // though findByIdAndDelete returns null if not found too.
         const blog = await Blog.findByIdAndDelete(req.params.id);
+        // Invalidate cache for this blog
+        cache.del(`blog:${req.params.id}`);
 
         if (!blog) {
             return res.status(404).json({ msg: 'Blog not found' });

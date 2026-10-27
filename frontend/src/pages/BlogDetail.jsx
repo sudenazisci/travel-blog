@@ -16,6 +16,7 @@ const BlogDetail = () => {
     const viewIncremented = React.useRef(false);
 
     useEffect(() => {
+        // Fetch blog detail
         const fetchBlog = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/api/blogs/${id}`);
@@ -30,9 +31,10 @@ const BlogDetail = () => {
             }
         };
 
+        // Fetch navigation blogs after blog is loaded (non‑blocking for the detail view)
         const fetchAllBlogs = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/api/blogs?limit=50`);
+                const res = await axios.get(`${API_BASE}/api/blogs?limit=50&excerpt=1`);
                 setAllBlogs(res.data.blogs || res.data || []);
             } catch (err) {
                 console.error('Error fetching blogs for navigation:', err);
@@ -40,6 +42,7 @@ const BlogDetail = () => {
         };
 
         fetchBlog();
+        // Load navigation list asynchronously; it does not block rendering of the blog content
         fetchAllBlogs();
     }, [id]);
 

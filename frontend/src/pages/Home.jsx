@@ -7,7 +7,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, ArrowRight, Instagram, Youtube, Megaphone } from 'lucide-react';
 import SEO from '../components/SEO';
 import FeaturedBlogSlider from '../components/FeaturedBlogSlider';
-import WorldMap from '../components/WorldMap';
+const WorldMap = React.lazy(() => import('../components/WorldMap'));
 import { getCachedData, setCachedData, STORAGE_KEYS } from '../cache';
 
 const DEFAULT_SETTINGS = {
@@ -40,7 +40,7 @@ const Home = () => {
             const params = new URLSearchParams(location.search);
             params.set('page', newPage);
             navigate(`/?${params.toString()}`);
-            
+
             const blogSection = document.getElementById('blog-section');
             if (blogSection) {
                 blogSection.scrollIntoView({ behavior: 'smooth' });
@@ -156,7 +156,7 @@ const Home = () => {
             {/* Main Body */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
-                    
+
                     {/* Main Content List (3/4) */}
                     <main className="w-full lg:w-3/4">
 
@@ -188,8 +188,8 @@ const Home = () => {
                         ) : error ? (
                             <div className="py-12 text-center border border-rose-200 bg-rose-50/50 p-6">
                                 <p className="font-serif text-lg text-rose-800 mb-2">{error}</p>
-                                <button 
-                                    onClick={() => window.location.reload()} 
+                                <button
+                                    onClick={() => window.location.reload()}
                                     className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#1A1918] text-white hover:bg-[#A34828] transition-colors cursor-pointer"
                                 >
                                     Tekrar Dene
@@ -244,8 +244,8 @@ const Home = () => {
                                                 </div>
 
                                                 <div className="pt-2 border-t border-[#1A1918]/10 flex items-center justify-between mt-auto">
-                                                    <Link 
-                                                        to={`/blog/${blog._id}`} 
+                                                    <Link
+                                                        to={`/blog/${blog._id}`}
                                                         className="font-sans text-xs font-bold uppercase tracking-wider text-[#1A1918] group-hover:text-[#A34828] transition-colors inline-flex items-center gap-1.5 min-h-[38px]"
                                                     >
                                                         <span>Yazıyı Oku</span>
@@ -304,11 +304,10 @@ const Home = () => {
                                                 <button
                                                     key={pageNum}
                                                     onClick={() => handlePageChange(pageNum)}
-                                                    className={`w-8 h-8 flex items-center justify-center border transition-colors cursor-pointer ${
-                                                        pagination.currentPage === pageNum
-                                                            ? 'bg-[#1A1918] text-[#FBF9F5] border-[#1A1918]'
-                                                            : 'bg-[#FBF9F5] text-[#1A1918] border-[#1A1918]/20 hover:border-[#A34828] hover:text-[#A34828]'
-                                                    }`}
+                                                    className={`w-8 h-8 flex items-center justify-center border transition-colors cursor-pointer ${pagination.currentPage === pageNum
+                                                        ? 'bg-[#1A1918] text-[#FBF9F5] border-[#1A1918]'
+                                                        : 'bg-[#FBF9F5] text-[#1A1918] border-[#1A1918]/20 hover:border-[#A34828] hover:text-[#A34828]'
+                                                        }`}
                                                 >
                                                     {pageNum}
                                                 </button>
@@ -334,7 +333,7 @@ const Home = () => {
 
                     {/* Compact Sidebar */}
                     <aside className="w-full lg:w-1/4 space-y-3">
-                        
+
                         {/* Compact Instagram Card */}
                         <a
                             href={settings?.instagramPostUrl || 'https://www.instagram.com/ceylan.m.e/'}
@@ -406,8 +405,8 @@ const Home = () => {
                             <p className="font-sans text-[11px] text-[#2D2B29] leading-snug">
                                 Markanızı veya seyahat ürünlerinizi okurlarımızla buluşturun.
                             </p>
-                            <Link 
-                                to="/contact" 
+                            <Link
+                                to="/contact"
                                 className="inline-flex items-center gap-1 font-sans text-[10px] font-bold text-[#A34828] uppercase tracking-widest hover:underline pt-0.5 min-h-[28px]"
                             >
                                 <span>Reklam İletişimi</span>
@@ -431,7 +430,11 @@ const Home = () => {
                 </div>
 
                 <div className="relative border border-[#1A1918]/15 bg-[#F4F0E8] overflow-hidden h-[280px] sm:h-[320px]">
-                    <WorldMap settings={settings} />
+                    <React.Suspense
+                        fallback={<div className="h-full w-full bg-[#F4F0E8]" />}
+                    >
+                        <WorldMap settings={settings} />
+                    </React.Suspense>
                 </div>
             </div>
 
