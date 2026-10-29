@@ -1,11 +1,23 @@
 import React from 'react';
 
 // Palmiyeli, güneşli, dalgalı küçük bir tatil sahnesi (saf SVG + CSS, ek paket yok)
-const BeachLoader = ({ label = 'Yazı Yükleniyor...', hint = null }) => (
+const BeachLoader = ({ label = 'Yazı Yükleniyor' }) => (
     <div className="beach-loader" role="status" aria-live="polite">
         <style>{`
-            .beach-loader { text-align: center; max-width: 360px; width: 100%; }
-            .beach-scene { width: 100%; height: auto; display: block; margin: 0 auto 18px; overflow: visible; }
+            .beach-loader { text-align: center; max-width: 560px; width: 100%; }
+            .beach-scene { width: 100%; height: auto; display: block; margin: 0 auto 26px; overflow: visible; filter: drop-shadow(0 18px 30px rgba(163,72,40,.18)); }
+            .bl-glow { transform-origin: 250px 62px; animation: bl-glow 3.6s ease-in-out infinite; }
+            .bl-bird { animation: bl-fly 7s ease-in-out infinite alternate; }
+            .bl-bird-2 { animation-duration: 9s; animation-direction: alternate-reverse; }
+            .bl-spark { animation: bl-twinkle 2.2s ease-in-out infinite; }
+            .bl-spark:nth-of-type(2n) { animation-delay: .7s; }
+            .bl-spark:nth-of-type(3n) { animation-delay: 1.3s; }
+            .bl-bar { height: 3px; width: 160px; margin: 16px auto 0; border-radius: 3px; background: rgba(26,25,24,.08); overflow: hidden; }
+            .bl-bar::after { content: ''; display: block; height: 100%; width: 45%; border-radius: 3px; background: linear-gradient(90deg, transparent, #A34828, transparent); animation: bl-slide 1.6s ease-in-out infinite; }
+            @keyframes bl-glow { 0%,100% { transform: scale(1); opacity: .55; } 50% { transform: scale(1.35); opacity: .2; } }
+            @keyframes bl-fly { from { transform: translate(-16px, 4px); } to { transform: translate(22px, -6px); } }
+            @keyframes bl-twinkle { 0%,100% { opacity: 0; } 50% { opacity: .9; } }
+            @keyframes bl-slide { from { transform: translateX(-110%); } to { transform: translateX(260%); } }
             .bl-sun-rays { transform-origin: 250px 62px; animation: bl-spin 14s linear infinite; }
             .bl-sun { transform-origin: 250px 62px; animation: bl-pulse 2.6s ease-in-out infinite; }
             .bl-cloud-a { animation: bl-drift 9s ease-in-out infinite alternate; }
@@ -46,6 +58,7 @@ const BeachLoader = ({ label = 'Yazı Yükleniyor...', hint = null }) => (
                 <rect width="320" height="190" fill="url(#bl-sky)" />
 
                 {/* Güneş */}
+                <circle className="bl-glow" cx="250" cy="62" r="34" fill="#F7C873" />
                 <g className="bl-sun-rays" stroke="#E9A23B" strokeWidth="3" strokeLinecap="round">
                     {[...Array(12)].map((_, i) => (
                         <line key={i} x1="250" y1="26" x2="250" y2="16" transform={`rotate(${i * 30} 250 62)`} />
@@ -61,6 +74,15 @@ const BeachLoader = ({ label = 'Yazı Yükleniyor...', hint = null }) => (
                 <g className="bl-cloud-b" fill="#FFFFFF" opacity=".8">
                     <ellipse cx="170" cy="26" rx="18" ry="7" />
                     <ellipse cx="184" cy="22" rx="11" ry="7" />
+                </g>
+
+                {/* Kuşlar */}
+                <g className="bl-bird" fill="none" stroke="#1A1918" strokeWidth="1.6" strokeLinecap="round" opacity=".6">
+                    <path d="M130 52 q5 -6 10 0 q5 -6 10 0" />
+                    <path d="M152 66 q4 -5 8 0 q4 -5 8 0" />
+                </g>
+                <g className="bl-bird bl-bird-2" fill="none" stroke="#1A1918" strokeWidth="1.4" strokeLinecap="round" opacity=".45">
+                    <path d="M20 70 q4 -5 8 0 q4 -5 8 0" />
                 </g>
 
                 {/* Deniz */}
@@ -98,13 +120,13 @@ const BeachLoader = ({ label = 'Yazı Yükleniyor...', hint = null }) => (
             </g>
         </svg>
 
-        <div className="font-mono text-xs text-[#A34828] uppercase tracking-widest">
+        <div className="font-mono text-sm sm:text-base text-[#A34828] uppercase tracking-[0.3em]">
             {label.replace(/\.+$/, '')}
             <span aria-hidden="true">
                 <span className="bl-dot">.</span><span className="bl-dot">.</span><span className="bl-dot">.</span>
             </span>
         </div>
-        {hint && <p className="font-serif text-[#4A4744] mt-4">{hint}</p>}
+        <div className="bl-bar" aria-hidden="true" />
     </div>
 );
 

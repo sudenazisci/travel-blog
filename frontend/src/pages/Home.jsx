@@ -8,7 +8,7 @@ import { Calendar, ArrowRight, Instagram, Youtube, Megaphone } from 'lucide-reac
 import SEO from '../components/SEO';
 import FeaturedBlogSlider from '../components/FeaturedBlogSlider';
 const WorldMap = React.lazy(() => import('../components/WorldMap'));
-import { getCachedData, setCachedData, sharedGet, STORAGE_KEYS } from '../cache';
+import { getCachedData, setCachedData, sharedGet, fetchSnapshot, STORAGE_KEYS } from '../cache';
 
 const DEFAULT_SETTINGS = {
     siteTitle: 'Ceylan.m.e.',
@@ -24,13 +24,13 @@ const Home = () => {
     const [blogs, setBlogs] = useState(initialBlogs);
     const [loading, setLoading] = useState(initialBlogs.length === 0);
     const [error, setError] = useState(null);
-    const [slow, setSlow] = useState(false);
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
         totalBlogs: initialBlogs.length
     });
     const [settings, setSettings] = useState(initialSettings);
+    const apiBlogsDone = React.useRef(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -65,6 +65,7 @@ const Home = () => {
                 if (query) url += `&search=${encodeURIComponent(query)}`;
 
                 const res = await axios.get(url, { timeout: 45000 });
+                apiBlogsDone.current = true;
                 if (res.data.blogs) {
                     setBlogs(res.data.blogs);
                     if (!query && page === 1) {
@@ -112,12 +113,23 @@ const Home = () => {
         fetchSettings();
     }, []);
 
-    // Skeleton görünürken 4 sn geçerse (sunucu uyanıyor olabilir) kısa bir bilgi göster
+    // Önbelleği olmayan ilk ziyaretçi: build'de üretilen CDN snapshot'ını hemen göster.
+    // Ana sayfa ilk sayfa ve arama olmayan durumda geçerlidir; API yanıtı gelince üzerine yazılır.
     useEffect(() => {
-        if (!loading) { setSlow(false); return; }
-        const t = setTimeout(() => setSlow(true), 4000);
-        return () => clearTimeout(t);
-    }, [loading]);
+        const params = new URLSearchParams(window.location.search);
+        if (initialBlogs.length > 0 || params.get('search') || (parseInt(params.get('page')) || 1) !== 1) return;
+        let cancelled = false;
+        fetchSnapshot('home.json', (d) => d && Array.isArray(d.blogs) && d.blogs.length > 0).then((snap) => {
+            if (!snap || cancelled || apiBlogsDone.current) return;
+            setBlogs(snap.blogs);
+            setPagination({ currentPage: 1, totalPages: Math.max(1, Math.ceil((snap.totalBlogs || snap.blogs.length) / 12)), totalBlogs: snap.totalBlogs || snap.blogs.length });
+            if (snap.settings) setSettings((prev) => (prev === initialSettings ? snap.settings : prev));
+            setError(null);
+            setLoading(false);
+        });
+        return () => { cancelled = true; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const instagramAvatar = settings?.instagramPreviewImage
         ? (settings.instagramPreviewImage.startsWith('http')
@@ -192,11 +204,6 @@ const Home = () => {
                                         <div className="h-4 bg-[#EAE6DF] w-full rounded"></div>
                                     </div>
                                 ))}
-                                {slow && (
-                                    <p className="md:col-span-2 font-sans text-xs text-[#78746D] text-center" role="status">
-                                        Sunucu uyanıyor, yazılar birazdan gelecek…
-                                    </p>
-                                )}
                             </div>
                         ) : error ? (
                             <div className="py-12 text-center border border-rose-200 bg-rose-50/50 p-6">

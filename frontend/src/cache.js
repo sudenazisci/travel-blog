@@ -43,6 +43,21 @@ export const sharedGet = (axiosInstance, url, config = {}) => {
     return promise;
 };
 
+// Build sırasında üretilen statik snapshot'ı (Vercel CDN) okur. Yoksa/bozuksa null döner.
+export const fetchSnapshot = async (relPath, validate) => {
+    try {
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 8000);
+        const res = await fetch(`/snapshot/${relPath}`, { signal: ctl.signal });
+        clearTimeout(t);
+        if (!res.ok || !(res.headers.get('content-type') || '').includes('json')) return null;
+        const data = await res.json();
+        return validate(data) ? data : null;
+    } catch (e) {
+        return null;
+    }
+};
+
 export const DEFAULT_STATIC_REGIONS = [
     { _id: 'def-tr', name: 'TÜRKİYE', isRegion: true },
     { _id: 'def-af', name: 'AFRİKA', isRegion: true },

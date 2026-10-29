@@ -8,12 +8,12 @@ import SEO from '../components/SEO';
 import AdBanner from '../components/AdBanner';
 import BeachLoader from '../components/BeachLoader';
 import { Calendar, Share2, Copy, Check, ArrowLeft, MessageCircle, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { fetchSnapshot } from '../cache';
 
 // Public, published-post cache. Never stores drafts or anything fetched with admin credentials.
 const CACHE_PREFIX = 'blogCache:v1:';
 const CACHE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const FETCH_TIMEOUT = 60000; // Render cold start can take ~50s; never wait forever
-const SLOW_HINT_MS = 4000;
 const CACHE_FIELDS = ['_id', 'title', 'content', 'image', 'destination', 'metaTitle', 'metaDescription', 'createdAt', 'updatedAt', 'isDraft'];
 
 const isAdminSession = () => {
@@ -55,7 +55,6 @@ const BlogDetail = () => {
     const [allBlogs, setAllBlogs] = useState([]);
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState(null); // 'notfound' | 'failed' | null
-    const [slow, setSlow] = useState(false);
     const [retry, setRetry] = useState(0);
     const viewIncremented = React.useRef(false);
 
@@ -64,13 +63,20 @@ const BlogDetail = () => {
         const cached = readCache(id);
         setBlog(cached);
         setError(null);
-        setSlow(false);
-        const slowTimer = cached ? null : setTimeout(() => !cancelled && setSlow(true), SLOW_HINT_MS);
+        let apiDone = false;
+
+        // Tarayıcı önbelleği yoksa: build sırasında üretilen CDN snapshot'ı hemen göster.
+        // (Backend uyuyor olsa bile içerik anında gelir; API yanıtı gelince güncellenir.)
+        if (!cached && !isAdminSession() && /^[a-f0-9]{24}$/i.test(id)) {
+            fetchSnapshot(`blog/${id}.json`, (d) => d && d._id === id && typeof d.content === 'string' && d.title && !d.isDraft)
+                .then((snap) => { if (snap && !cancelled && !apiDone) setBlog(snap); });
+        }
 
         // Fetch blog detail (revalidates in background when cached)
         const fetchBlog = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/api/blogs/${id}`, { timeout: FETCH_TIMEOUT });
+                apiDone = true;
                 if (cancelled) return;
                 setBlog(res.data);
                 setError(null);
@@ -92,8 +98,6 @@ const BlogDetail = () => {
                 } else if (!cached) {
                     setError('failed'); // with a cache we keep showing the cached post
                 }
-            } finally {
-                if (slowTimer) clearTimeout(slowTimer);
             }
         };
 
@@ -113,7 +117,6 @@ const BlogDetail = () => {
 
         return () => {
             cancelled = true;
-            if (slowTimer) clearTimeout(slowTimer);
         };
     }, [id, retry]);
 
@@ -161,10 +164,7 @@ const BlogDetail = () => {
                     </div>
                 </div>
             ) : (
-                <BeachLoader
-                    label="Yazı Yükleniyor"
-                    hint={slow ? 'Sunucu uyanıyor, bu ilk açılışta biraz zaman alabilir. Lütfen sayfayı kapatma.' : null}
-                />
+                <BeachLoader label="Yazı Yükleniyor" />
             )}
         </div>
     );
