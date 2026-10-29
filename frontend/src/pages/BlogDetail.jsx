@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import AdBanner from '../components/AdBanner';
+import BeachLoader from '../components/BeachLoader';
 import { Calendar, Share2, Copy, Check, ArrowLeft, MessageCircle, Twitter, Facebook, Linkedin } from 'lucide-react';
 
 // Public, published-post cache. Never stores drafts or anything fetched with admin credentials.
@@ -160,14 +161,10 @@ const BlogDetail = () => {
                     </div>
                 </div>
             ) : (
-                <div className="text-center max-w-md" role="status" aria-live="polite">
-                    <div className="font-mono text-xs text-[#A34828] uppercase tracking-widest animate-pulse">Yazı Yükleniyor...</div>
-                    {slow && (
-                        <p className="font-serif text-[#4A4744] mt-4">
-                            Sunucu uyanıyor, bu ilk açılışta biraz zaman alabilir. Lütfen sayfayı kapatma.
-                        </p>
-                    )}
-                </div>
+                <BeachLoader
+                    label="Yazı Yükleniyor"
+                    hint={slow ? 'Sunucu uyanıyor, bu ilk açılışta biraz zaman alabilir. Lütfen sayfayı kapatma.' : null}
+                />
             )}
         </div>
     );
