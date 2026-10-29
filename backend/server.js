@@ -80,6 +80,11 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
+// Sağlık kontrolü: DB'yi beklemeden anında yanıt verir (uyandırma/ping için hafif uç)
+app.get('/healthz', (req, res) => {
+    res.set('Cache-Control', 'no-store').json({ ok: true, db: mongoose.connection.readyState === 1 });
+});
+
 // Database Connection (serverless için bağlantı önbelleği)
 let dbPromise = null;
 const connectDB = () => {
@@ -94,20 +99,33 @@ const connectDB = () => {
     }
     return dbPromise;
 };
-connectDB();
-// Her istek DB hazır olana kadar bekler (buffer timeout hatalarını önler)
-app.use(async (req, res, next) => { await connectDB(); next(); });
 
-let adminBootstrapDone = false;
+// Admin bootstrap: bağlantı kurulur kurulmaz tek sefer, paylaşılan promise ile çalışır.
+let bootstrapPromise = null;
+const ensureBootstrap = () => {
+    if (mongoose.connection.readyState !== 1) return Promise.resolve();
+    if (!bootstrapPromise) {
+        bootstrapPromise = require('./services/adminBootstrap').ensureAdminUser()
+            .catch(err => {
+                bootstrapPromise = null;
+                console.error('[adminBootstrap] Hata:', err.message);
+            });
+    }
+    return bootstrapPromise;
+};
+
+// Boot sırasında başlat: ilk ziyaretçi isteği beklemeden DB + bootstrap hazırlanır
+connectDB().then(() => ensureBootstrap());
+
+// Her istek DB hazır olana kadar bekler (buffer timeout hatalarını önler)
 app.use(async (req, res, next) => {
-    if (!adminBootstrapDone && mongoose.connection.readyState === 1) {
-        adminBootstrapDone = true;
-        try {
-            await require('./services/adminBootstrap').ensureAdminUser();
-        } catch (err) {
-            adminBootstrapDone = false;
-            console.error('[adminBootstrap] Hata:', err.message);
-        }
+    await connectDB();
+    // Yalnızca giriş istekleri bootstrap'in bitmesini bekler (parola güncellemesiyle yarışmasın).
+    // Herkese açık GET istekleri bcrypt/yazma işlemini beklemez.
+    if (req.originalUrl.startsWith('/api/auth')) {
+        await ensureBootstrap();
+    } else {
+        ensureBootstrap();
     }
     next();
 });

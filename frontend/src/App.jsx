@@ -27,6 +27,7 @@ import CookieConsent from './components/CookieConsent';
 import axios from 'axios';
 import setupAxios from './setupAxios';
 import VisitorTracker from './components/VisitorTracker';
+import { sharedGet } from './cache';
 
 setupAxios();
 
@@ -40,7 +41,7 @@ function App() {
 
     React.useEffect(() => {
         // Fetch AdSense ID
-        axios.get(`${API_BASE}/api/settings`)
+        sharedGet(axios, `${API_BASE}/api/settings`)
             .then(res => {
                 if (res.data.googleAdSenseId) {
                     setAdSenseId(res.data.googleAdSenseId);

@@ -8,19 +8,73 @@ import SEO from '../components/SEO';
 import AdBanner from '../components/AdBanner';
 import { Calendar, Share2, Copy, Check, ArrowLeft, MessageCircle, Twitter, Facebook, Linkedin } from 'lucide-react';
 
+// Public, published-post cache. Never stores drafts or anything fetched with admin credentials.
+const CACHE_PREFIX = 'blogCache:v1:';
+const CACHE_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+const FETCH_TIMEOUT = 60000; // Render cold start can take ~50s; never wait forever
+const SLOW_HINT_MS = 4000;
+const CACHE_FIELDS = ['_id', 'title', 'content', 'image', 'destination', 'metaTitle', 'metaDescription', 'createdAt', 'updatedAt', 'isDraft'];
+
+const isAdminSession = () => {
+    try { return !!localStorage.getItem('token'); } catch { return false; }
+};
+
+const readCache = (id) => {
+    try {
+        if (isAdminSession()) return null;
+        const raw = localStorage.getItem(CACHE_PREFIX + id);
+        if (!raw) return null;
+        const { savedAt, data } = JSON.parse(raw);
+        if (!data || data.isDraft || typeof data.content !== 'string' || !data.title || Date.now() - savedAt > CACHE_MAX_AGE) {
+            localStorage.removeItem(CACHE_PREFIX + id);
+            return null;
+        }
+        return data;
+    } catch {
+        return null;
+    }
+};
+
+const writeCache = (id, blog) => {
+    try {
+        if (isAdminSession() || !blog || blog.isDraft) return;
+        const data = {};
+        CACHE_FIELDS.forEach((k) => { if (blog[k] !== undefined) data[k] = blog[k]; });
+        localStorage.setItem(CACHE_PREFIX + id, JSON.stringify({ savedAt: Date.now(), data }));
+    } catch { /* quota/private mode: ignore */ }
+};
+
+const clearCache = (id) => {
+    try { localStorage.removeItem(CACHE_PREFIX + id); } catch { /* ignore */ }
+};
+
 const BlogDetail = () => {
     const { id } = useParams();
-    const [blog, setBlog] = useState(null);
+    const [blog, setBlog] = useState(() => readCache(id));
     const [allBlogs, setAllBlogs] = useState([]);
     const [copied, setCopied] = useState(false);
+    const [error, setError] = useState(null); // 'notfound' | 'failed' | null
+    const [slow, setSlow] = useState(false);
+    const [retry, setRetry] = useState(0);
     const viewIncremented = React.useRef(false);
 
     useEffect(() => {
-        // Fetch blog detail
+        let cancelled = false;
+        const cached = readCache(id);
+        setBlog(cached);
+        setError(null);
+        setSlow(false);
+        const slowTimer = cached ? null : setTimeout(() => !cancelled && setSlow(true), SLOW_HINT_MS);
+
+        // Fetch blog detail (revalidates in background when cached)
         const fetchBlog = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/api/blogs/${id}`);
+                const res = await axios.get(`${API_BASE}/api/blogs/${id}`, { timeout: FETCH_TIMEOUT });
+                if (cancelled) return;
                 setBlog(res.data);
+                setError(null);
+                if (res.data && res.data.isDraft) clearCache(id);
+                else writeCache(id, res.data);
 
                 if (!viewIncremented.current && !res.data.isDraft && !localStorage.getItem('token') && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
                     viewIncremented.current = true;
@@ -28,6 +82,17 @@ const BlogDetail = () => {
                 }
             } catch (err) {
                 console.error('Error fetching blog detail:', err);
+                if (cancelled) return;
+                const status = err.response && err.response.status;
+                if (status === 404) {
+                    clearCache(id);
+                    setBlog(null);
+                    setError('notfound');
+                } else if (!cached) {
+                    setError('failed'); // with a cache we keep showing the cached post
+                }
+            } finally {
+                if (slowTimer) clearTimeout(slowTimer);
             }
         };
 
@@ -44,7 +109,12 @@ const BlogDetail = () => {
         fetchBlog();
         // Load navigation list asynchronously; it does not block rendering of the blog content
         fetchAllBlogs();
-    }, [id]);
+
+        return () => {
+            cancelled = true;
+            if (slowTimer) clearTimeout(slowTimer);
+        };
+    }, [id, retry]);
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(window.location.href);
@@ -69,8 +139,36 @@ const BlogDetail = () => {
     };
 
     if (!blog) return (
-        <div className="flex items-center justify-center min-h-screen bg-[#FBF9F5]">
-            <div className="font-mono text-xs text-[#A34828] uppercase tracking-widest">Yazı Yükleniyor...</div>
+        <div className="flex items-center justify-center min-h-screen bg-[#FBF9F5] px-6">
+            {error ? (
+                <div className="text-center max-w-md" role="alert">
+                    <div className="font-serif text-2xl text-[#1A1918] mb-3">
+                        {error === 'notfound' ? 'Yazı bulunamadı' : 'Yazı şu an yüklenemedi'}
+                    </div>
+                    <p className="font-serif text-[#4A4744] mb-6">
+                        {error === 'notfound'
+                            ? 'Aradığın yazı kaldırılmış ya da yayından alınmış olabilir.'
+                            : 'Sunucuya ulaşılamadı veya yanıt çok uzun sürdü. Lütfen tekrar dene.'}
+                    </p>
+                    <div className="flex items-center justify-center gap-4 font-mono text-xs uppercase tracking-widest">
+                        {error !== 'notfound' && (
+                            <button onClick={() => setRetry((n) => n + 1)} className="px-4 py-3 bg-[#1A1918] text-[#FBF9F5] hover:bg-[#A34828] transition-colors min-h-[44px]">
+                                Tekrar Dene
+                            </button>
+                        )}
+                        <Link to="/" className="text-[#A34828] hover:underline min-h-[44px] inline-flex items-center">Ana Sayfa</Link>
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center max-w-md" role="status" aria-live="polite">
+                    <div className="font-mono text-xs text-[#A34828] uppercase tracking-widest animate-pulse">Yazı Yükleniyor...</div>
+                    {slow && (
+                        <p className="font-serif text-[#4A4744] mt-4">
+                            Sunucu uyanıyor, bu ilk açılışta biraz zaman alabilir. Lütfen sayfayı kapatma.
+                        </p>
+                    )}
+                </div>
+            )}
         </div>
     );
 

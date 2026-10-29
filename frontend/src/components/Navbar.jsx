@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import { getCachedData, setCachedData, STORAGE_KEYS, DEFAULT_STATIC_REGIONS } from '../cache';
+import { getCachedData, setCachedData, sharedGet, STORAGE_KEYS, DEFAULT_STATIC_REGIONS } from '../cache';
 
 const Navbar = () => {
     const cachedSettings = getCachedData(STORAGE_KEYS.SETTINGS);
@@ -62,7 +62,7 @@ const Navbar = () => {
 
         const loadNavData = async () => {
             // Independent, non-blocking requests for instant render
-            axios.get(`${API_BASE}/api/settings`)
+            sharedGet(axios, `${API_BASE}/api/settings`)
                 .then(res => {
                     if (isMounted && res.data?.siteTitle) {
                         setSiteTitle(res.data.siteTitle);
@@ -71,7 +71,7 @@ const Navbar = () => {
                 })
                 .catch(() => { });
 
-            axios.get(`${API_BASE}/api/destinations`)
+            sharedGet(axios, `${API_BASE}/api/destinations`)
                 .then(res => {
                     if (isMounted && Array.isArray(res.data) && res.data.length > 0) {
                         setDestinations(res.data);

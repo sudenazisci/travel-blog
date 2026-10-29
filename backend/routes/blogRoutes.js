@@ -130,8 +130,8 @@ router.get('/:id', async (req, res) => {
         if (!blog || (blog.isDraft && !auth.isAdminRequest(req))) {
             return res.status(404).json({ msg: 'Blog not found' });
         }
-        // Store in cache for 5 minutes
-        cache.set(cacheKey, blog, 300);
+        // Store in cache for 5 minutes (taslaklar asla paylaşımlı önbelleğe alınmaz)
+        if (!blog.isDraft) cache.set(cacheKey, blog, 300);
         res.json(blog);
     } catch (err) {
         console.error(err.message);

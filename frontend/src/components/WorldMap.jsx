@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import { Plus, Minus } from 'lucide-react';
+import { getCachedData, sharedGet, STORAGE_KEYS } from '../cache';
 
 // Custom Marker Generator
 const createCustomMarker = (image, name) => {
@@ -76,7 +77,11 @@ let cachedDestinations = null;
 
 const WorldMap = ({ settings }) => {
     const navigate = useNavigate();
-    const [destinations, setDestinations] = useState(cachedDestinations || []);
+    const [destinations, setDestinations] = useState(() => {
+        if (cachedDestinations) return cachedDestinations;
+        const stored = getCachedData(STORAGE_KEYS.DESTINATIONS, []);
+        return Array.isArray(stored) ? stored : [];
+    });
     const [panTarget, setPanTarget] = useState(null);
 
     useEffect(() => {
@@ -84,7 +89,7 @@ const WorldMap = ({ settings }) => {
         const fetchDestinations = async () => {
             if (cachedDestinations && cachedDestinations.length > 0) return;
             try {
-                const res = await axios.get(`${API_BASE}/api/destinations`);
+                const res = await sharedGet(axios, `${API_BASE}/api/destinations`);
                 cachedDestinations = res.data;
                 if (isMounted) setDestinations(res.data);
             } catch (err) {

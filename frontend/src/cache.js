@@ -24,6 +24,25 @@ export const setCachedData = (key, data) => {
     }
 };
 
+// Aynı public GET isteği eşzamanlı birden çok bileşenden gelirse tek istek paylaşılır.
+// Backend soğuk başlangıçtayken aynı veri için 3 ayrı bekleyen istek oluşmasını önler.
+// Admin oturumunda (token) paylaşım yapılmaz.
+const inflight = new Map();
+const SHARED_TTL = 15000;
+export const sharedGet = (axiosInstance, url, config = {}) => {
+    let hasToken = false;
+    try { hasToken = !!localStorage.getItem('token'); } catch (e) { /* ignore */ }
+    if (hasToken) return axiosInstance.get(url, config);
+
+    const hit = inflight.get(url);
+    if (hit && Date.now() - hit.at < SHARED_TTL) return hit.promise;
+
+    const promise = axiosInstance.get(url, config);
+    inflight.set(url, { at: Date.now(), promise });
+    promise.catch(() => { if (inflight.get(url)?.promise === promise) inflight.delete(url); });
+    return promise;
+};
+
 export const DEFAULT_STATIC_REGIONS = [
     { _id: 'def-tr', name: 'TÜRKİYE', isRegion: true },
     { _id: 'def-af', name: 'AFRİKA', isRegion: true },

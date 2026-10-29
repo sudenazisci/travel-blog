@@ -1,0 +1,20 @@
+# Render ücretsiz planda backend 15 dk istek almazsa uyur. Bu iş her ~10 dk'da hafif bir istek atar.
+# NOT: GitHub zamanlayıcıları gecikebilir/atlanabilir; bu bir GARANTİ değil, soğuk başlangıcı azaltır.
+# NOT: Sürekli uyanık tutmak Render'ın aylık 750 ücretsiz instance saatini (~744 saat) tüketir.
+#      Hesabında başka ücretsiz Render servisi varsa bu workflow'u devre dışı bırak.
+name: keep-backend-warm
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping backend
+        run: |
+          curl -fsS --max-time 90 --retry 2 https://travel-blog-wfkm.onrender.com/healthz \
+            || curl -fsS --max-time 90 https://travel-blog-wfkm.onrender.com/api/settings -o /dev/null
