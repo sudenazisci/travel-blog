@@ -18,3 +18,7 @@ jobs:
         run: |
           curl -fsS --max-time 90 --retry 2 https://travel-blog-wfkm.onrender.com/healthz \
             || curl -fsS --max-time 90 https://travel-blog-wfkm.onrender.com/api/settings -o /dev/null
+
+      - name: Ping Supabase Storage (keep active and prevent pause)
+        run: |
+          curl -sS --max-time 30 https://qtdiukkzisxigfznomkg.supabase.co/storage/v1/bucket/blog-images -o /dev/null || true
